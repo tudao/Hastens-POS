@@ -1,6 +1,6 @@
 global class POS_Pages_Svcs_dev {
 
-public POS_Pages_Svcs_dev() {
+public POS_Pages_Svcs_dev() {//controller
 }
 
 static String doErr(String msg,String err_code,Map<String,Object> result) {
