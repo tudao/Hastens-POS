@@ -1,0 +1,2122 @@
+<apex:page cache="false"
+  docType="html-5.0"
+  standardStylesheets="false"
+  showHeader="false"
+  sidebar="false"
+  controller="POS_Pages_Svcs_dev">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <link href="{!URLFOR($Resource.Hastens_POS_styles, 'hastens_pos_styles/styles/HastensPOS1.css')}" rel="stylesheet" />
+    <link href="{!URLFOR($Resource.Hastens_POS_styles, 'hastens_pos_styles/js/jquery.mobile.structure-1.3.2.css')}" rel="stylesheet" />
+    <apex:includeScript value="{!URLFOR($Resource.Hastens_POS_styles, 'hastens_pos_styles/js/jquery-1.10.2.js')}"/>
+    <apex:includeScript value="{!URLFOR($Resource.Hastens_POS_styles, 'hastens_pos_styles/js/jquery.mobile-1.3.2.js')}"/>
+    <apex:includeScript value="{!URLFOR($Resource.Hastens_POS_styles, 'hastens_pos_styles/js/modernizr_custom1.js')}"/>
+    <style>
+
+@media only screen and (min-width: 1700px) {
+    html { font-size:20px; }
+    .page_wrap {
+        width:1650px;
+    }
+    #basket .pg_maincol, #order .pg_maincol { width:1586px; margin:0 32px 0; display:inline-block; vertical-align:top; }
+
+    .pg_halfcol { width:736px; margin:0 32px 0; display:inline-block; vertical-align:top; }
+    .pg_1of3col { width:518px; margin:0 32px 0; display:inline-block; vertical-align:top; }
+    .pg_2of3col { width:986px; margin:0 0 0 32px; display:inline-block; vertical-align:top; }
+    .addr_ctact { margin-left:450px; width:250px; }
+    .addr_loc { margin-left:120px; width:230px; }
+}
+
+@media only screen and (min-width: 980px) and (max-width: 1699px) {
+    html { font-size:16px; }
+    .page_wrap {
+        width:950px; 
+    }
+    #basket .pg_maincol, #order .pg_maincol { width:886px; margin:0 32px 0; display:inline-block; vertical-align:top; }
+
+    .pg_halfcol { width:386px; margin:0 32px 0; display:inline-block; vertical-align:top; }
+    .pg_1of3col { width:268px; margin:0  0 0 32px; display:inline-block; vertical-align:top; }
+    .pg_2of3col { width:536px; margin:0 32px 0; display:inline-block; vertical-align:top; }
+    .addr_ctact { margin-left:20px; width:200px; }
+    .addr_loc { margin-left:20px; width:180px; }
+}
+
+@media only screen and (max-width: 979px) {
+    html { font-size:16px; }
+    .page_wrap {
+    }
+    div[p_range="bed-continental"] img { width:106.6px; }
+    div[p_range="bed-adjustable"] img { width:111px; }
+    div[p_range="bed-frame"] img { width:106.6px; }
+    div[p_range="accessy"] img { width:111px; }
+    div.range_row div img { height:80px; }
+    .range_row { display:inline-block; width:300px; margin-top:24px; }
+    .range_row .range_cell_lbl { font-size:11px; }
+    .h_logo { width:305px; height:90px; margin-bottom: 20px; margin-right: 20px; }
+    div.range_row div div.range_cell_lbl { position:absolute; margin:6px 0 0 8px; color:#999; background-color:#fff;border-radius:4.8px; padding:0 4px 0;}
+    #lkup_acct .pg_maincol, #order_bed .pg_maincol, #order_accs .pg_maincol { width:350px; margin:0 12px 0; display:inline-block; vertical-align:top; }
+    #basket .pg_maincol, #order .pg_maincol { margin:0 32px 0; display:inline-block; vertical-align:top; }
+    #lkup_acct .cust_addr_ro { 
+        margin-left:0px;
+    }
+    .addr_ctact { width:200px; }
+    .addr_loc { margin-left:20px; width:150px; }
+}
+/*This applies to all wide layouts. Styles 4 a specific width range >=980px shouldn't be in here */
+@media only screen and (min-width: 980px) {
+    html { font-size:16px; }
+    div[p_range="bed-continental"] img { width:213.3px; }
+    div[p_range="bed-adjustable"] img { width:222px; }
+    div[p_range="bed-frame"] img { width:213.3px; }
+    div[p_range="accessy"] img { width:222px; }
+    div.range_row div img { height:160px; }
+    .range_row { display:inline-block; width:520px; margin-top:24px; }
+    .h_logo { width:305px; height:90px; margin-bottom: 20px; }
+    div.range_row div div.range_cell_lbl { position:absolute; margin:8px 0 0 48px; color:#999; background-color:#fff;border-radius:4.8px; padding:0 4px 0;}
+    #lkup_acct .pg_maincol, #order_bed .pg_maincol, #order_accs .pg_maincol { width:600px; margin:0 32px 0; display:inline-block; vertical-align:top; }
+    #lkup_acct .cust_addr_ro { 
+        margin-left:75px;
+    }
+}
+
+html.nomqs { font-size:16px; }
+    .nomqs .page_wrap { width:950px; }
+    .nomqs .pg_halfcol { width:386px; margin:0 32px 0; display:inline-block; vertical-align:top; }
+    .nomqs .pg_1of3col { width:268px; margin:0  0 0 32px; display:inline-block; vertical-align:top; }
+    .nomqs .pg_2of3col { width:536px; margin:0 32px 0; display:inline-block; vertical-align:top; }
+    .nomqs #lkup_acct .pg_maincol, .nomqs #order_bed .pg_maincol, #order_accs .pg_maincol { 
+        width:600px; margin:0 32px 0; display:inline-block; vertical-align:top; }
+    .nomqs #basket .pg_maincol, .nomqs #order .pg_maincol { width:886px; margin:0 32px 0; display:inline-block; vertical-align:top; }
+    .nomqs div[p_range="bed-continental"] img { width:213.3px; }
+    .nomqs div[p_range="bed-adjustable"] img { width:222px; }
+    .nomqs div[p_range="bed-frame"] img { width:213.3px; }
+    .nomqs div[p_range="accessy"] img { width:222px; }
+    .nomqs div.range_row div img { height:160px; }
+    .nomqs .range_row { display:inline-block; width:520px; margin-top:24px; }
+    .nomqs .h_logo { width:305px; height:90px; margin-bottom: 20px; }
+    .nomqs #lkup_acct .cust_addr_ro { 
+        margin-left:0px;
+    }
+
+@media only screen {
+    h3  { font-size:17px; }
+    .pg_1of3col * { vertical-align:top; }
+    .pg_2of3col * { vertical-align:top; }
+    .pg_halfcol div, .pg_halfcol img { vertical-align:top; }
+    #srch_key { width:290px; }
+    #srch_key_row div { display:inline-block; vertical-align:middle; margin-right:10px; }
+    .page_wrap { margin: 0 auto; }
+    .sctn_hdr { margin-top: 32px; }
+    .form_card1 { text-align:left; }
+    td.form_card1_lbl > div { min-width:130px; min-height:42px; }
+    td.form_card1_lbl > div > div { display: inline-block; margin-top:12px; }
+    #acct_edit_err { color:red; text-align:center; }
+    .form_card1_err { color:red; text-align:center; margin-bottom:10px; }
+    .ctrls_row_r { text-align:right; }
+    .ctrls_row_fr { text-align:right; display:inline-block; float:right; }
+    .ctrls_row_c { text-align:center; }
+    .ctrls_col1_inl {
+        display: inline-block;
+        width: 180px;
+    }
+    .img_cell1, div.range_row div img { background-color:#fff;border-radius:4.8px;color:#444;vertical-align:top;border-color:#ccc;border-style:solid;border-width:3.2px;box-shadow: 0.15px 1.6px 3.2px; }
+    div.range_row div { margin:0 16px 0; display: inline-block; }
+    .range_grid { text-align:center; }
+    .mdl_cell { display: inline-block; margin:8px; background-color:#fff;border-radius:4.8px;color:#444;vertical-align:top;border-color:#999;border-style:solid;border-width:3.2px;box-shadow: 0.15px 1.6px 3.2px; }
+    .mdl_cell img { height:80px; }
+    .mdl_cell_lbl { position:absolute; font-size:50%; margin:8px 0 0 16px; color:#999; background-color:#fff;border-radius:4.8px; padding:0 0.280px 0;}
+    .inl_rdo1 { display: inline-block; width: 144px; margin: 0 16px 0; }
+    .sol_ro_qty {width:48px; text-align:right;}
+    .sol_ro_desc {}
+    #acct_edit_err { color:red; text-align:center; }
+    #srch_res_wrap { margin:10px 2px; }
+    #srch_res_wrap h3 { margin:0 10px; }
+    .cust_addr_sec { display: none; }
+    .cust_addr_sec div { vertical-align:top; }
+    #ords4c_wrap { margin:10px 2px; }
+    #ords4c_wrap h3 { margin:0 10px; }
+    .grand_lbl1 { margin-top:10px; }
+    #nw_acc_row { margin-top:10px; }
+    #bed_summry_div .form_card1 tr { display:none; }
+    #pick_legs_panel a { white-space: normal; }
+    #lkup_acct .cust_addr_ro { 
+        display: inline-block;
+        white-space:pre-line;
+        width:245px;
+        padding: 15px 10px 5px;
+        height: 200px;
+        overflow: auto;
+    }
+
+    .quote_body,.order_body {
+        display:none;
+        border:1px solid #fff;
+        margin-top: 10px;
+    }
+    .ordr_hdrs {
+        padding-top:5px;
+        padding-bottom:5px;
+    }
+    .quote_top_row > div,.quote_top_row > img,
+    .order_top_row > div,.order_top_row > img 
+    {
+        display:inline-block;
+        vertical-align: middle;
+    }
+    .hastens_addr_ro > div {
+        display:inline-block;
+        vertical-align: middle;
+    }
+    .ordr_addr_div {}
+    .text1 { padding:5px; }
+    .q_bed_list_table,.q_sum_table,.q_dtls_table,.q_accy_list_table,.q_paid_table {
+        width:100%;
+        border-collapse:collapse;
+    }
+    .q_bed_list_table td,.q_sum_table td,.q_dtls_table td,.q_accy_list_table td, .q_paid_table td {
+        padding:5px;
+        border:0;
+        vertical-align:top; 
+    }
+    .q_dtls_table td {
+        vertical-align:middle;  
+    }
+    .o_ccy { display:block; }
+    .ql-val,.ql_disc_bc { text-align:right; }
+    .ql_disc_bc { margin-right:10px; }
+    .ql_inl { display:inline-block; }
+    .q_bed_list_table td.col3,.q_bed_list_table td.col4,.q_bed_list_table td.col5, .q_bed_list_table td.col6
+    ,.q_accy_list_table td.col3,.q_accy_list_table td.col4,.q_accy_list_table td.col5
+    ,.q_sum_table td.col2,.q_sum_table td.col3,.q_sum_table td.col4
+    ,.q_paid_table td.col2
+    { width:100px; text-align:right; }
+    .q_paid_table td.col3
+    { width:200px; text-align:right; }
+    .q_bed_list_table td.bed_summ_qty_col,.q_accy_list_table td.accy_qty_col,.q_bed_list_table td.bed_part_qty_col
+    { width:50px; text-align:center; }
+    .addr_e-mail { margin-bottom:10px; }
+    .ql-lbl { color:#ccc; margin-right:5px; display:inline-block; }
+    .ref_div_content .ql-lbl { min-width:100px; }   
+    .bed_summ_spec .ql-lbl,.q_sum_vals .ql-lbl  { min-width:150px; }
+    .cctct { margin-top:10px; }
+    .q_dtls_h .col2,.q_dtls_h .col3 { width:200px; }
+    #ord_pay_amt,#ql_qty_editor { text-align:right; }
+    #accy_shortlist_choices a { white-space:normal; }
+    #order_accs .fillout_img1_col {margin-top:50px;}
+    #acct_edit_err { margin-bottom:10px; }
+    .ui-panel { width: 34em; }
+    .form_card1_edit {width:125px;}
+    .form_card1_val {padding-left:5px;}
+    .fillout_img1_col {display:none;}
+    #order_accs .fillout_img1_col {display:inline-block;}
+}
+    </style>
+    <script>
+var $$ = jQuery.noConflict();
+var quote_btn_url='{!URLFOR($Action.PBSI__Quote__c.Generate_Quote)}';
+var order_btn_url='{!URLFOR($Action.PBSI__PBSI_Sales_Order__c.Receipt)}';
+var app_state = {};
+function set_app_state(k,v) {
+//console.log('app_state');
+//console.log(app_state);
+    if(typeof app_state !== 'object') app_state = {};
+    app_state[k] = v;
+    if(typeof sessionStorage !== 'undefined') {
+        sessionStorage.setItem('_hastensPOS_app',JSON.stringify(app_state));
+    }
+}
+function restore_app_state() {
+    if(typeof sessionStorage !== 'undefined') {
+        app_state = JSON.parse(sessionStorage.getItem('_hastensPOS_app'));
+        if(typeof app_state !== 'object' || app_state==null) app_state = {};
+    }
+}
+
+function getUniqeParams()
+{
+    var vars = {}, hash;
+    var href = window.location.href;
+    if( -1 == href.indexOf('?') ) return {};
+    if( -1 != href.indexOf('#') ) href = href.slice(0,href.indexOf('#'));
+    var hashes = href.slice(href.indexOf('?') + 1).split('&');
+    for(var i = 0; i < hashes.length; i++)
+    {
+        hash = hashes[i].split('=');
+        vars[hash[0]] = hash[1];
+    }
+    return vars;
+}
+//Check if a map is empty 
+function isEmpty(map) {
+   var empty = true;
+   for(var key in map) {
+      empty = false;
+      break;
+   }
+   return empty;
+}
+
+function htmlEncode(value) {
+  if (value) {
+    return $$('<div />').text(value).html();
+  }
+  return value;
+}
+//delete curr_quote from app_state 
+function cust_pg_loaded() {
+    console.log('cust_pg_loaded');
+    console.log(app_state);
+    delete app_state.curr_quote;
+}
+//Display found accounts on srch_res_panel
+function found_accounts(accs) {
+    var al = [];
+    for(var i=0; i<accs.length; i++) {
+        var ac = accs[i];
+        var ln = '';
+        if(ac.Name) ln = ln + ac.Name;
+        if(ac.BillingStreet) ln = ln + ',' + ac.BillingStreet;
+        if(ac.BillingPostalCode) ln = ln + ',' + ac.BillingPostalCode;
+        al.push( '<li acc_id="'+ac.Id+'"><a href="#">'+htmlEncode(ln)+'</a></li>' );
+    }
+    $$('#srch_res').html('<ul data-role="listview" data-inset="true">'+al.join('')+'</ul><p>Click the customer name to display their open/closed orders.</p>');
+    $$('#srch_res ul').listview();
+    $$('#srch_res li').click( function(e) { e.preventDefault(); do_order_stat( $$(this).attr('acc_id') ); });
+    $$('#srch_res_panel').panel( "open" );
+}
+
+function zip_found_none() {
+    $$('#srch_res').html('<ul data-role="listview" data-inset="true"><li>Found no accounts for that zip code.</li></ul>');
+    $$('#srch_res_panel').panel( "open" );
+}
+
+function name_found_none() {
+    $$('#srch_res').html('<ul data-role="listview" data-inset="true"><li>Found no accounts for that customer name.</li></ul>');
+    $$('#srch_res_panel').panel( "open" );
+}
+
+var fback_pg;
+function remoting_err(event) {
+    if(fback_pg) $$.mobile.changePage('#'+fback_pg);
+    if( event.type=='exception' && event.message.indexOf('(communication failure)')>0 ) {
+        alert('Please restore your internet connection and retry.');
+        return;
+    }
+    if( event.type=='exception' && event.message.indexOf('Logged in')>0 ) {
+        alert('Please login, refresh the browser page and then retry.');
+        window.open('/','_blank');
+        return;
+    }
+    console.log('remoting_err');
+    console.log(event.type);
+    console.log(event.message);
+}
+
+function do_zip_search() {
+    var zipc = $$.trim( $$('#srch_key').val());
+    POS_Pages_Svcs_dev.search_acc_zip(zipc,function(result, event) { if(event.status) {
+        if( 0 == result.success) { zip_found_none(); return; }
+        if( 0 == result.accounts.length ) { zip_found_none(); return; }
+        found_accounts(result.accounts);
+    } else remoting_err(event); },{escape:false});
+}
+
+function do_name_search() {
+    var full_name = $$.trim( $$('#srch_key').val());
+    POS_Pages_Svcs_dev.search_acc_name(full_name,function(result, event) { if(event.status) {
+        if( 0 == result.success) { name_found_none(); return; }
+        if( 0 == result.accounts.length ) { name_found_none(); return; }
+        found_accounts(result.accounts);
+    } else remoting_err(event); },{escape:false});
+}
+
+function refresh_addr(a) {
+    var addr = '';
+    if(a.Name) addr += '<div>'+ htmlEncode(a.Name) +'</div>';
+    if(a.BillingStreet) addr += '<div>'+ htmlEncode(a.BillingStreet) +'</div>';
+    if(a.BillingCity) addr += '<div>'+ htmlEncode(a.BillingCity) +'</div>';
+    if(a.BillingState) addr += '<div>'+ htmlEncode(a.BillingState) +'</div>';
+    if(a.BillingCountry) addr += '<div>'+ htmlEncode(a.BillingCountry) +'</div>';
+    if(a.BillingPostalCode) addr += '<div>'+ htmlEncode(a.BillingPostalCode) +'</div>';
+    addr += '<div class="cctct">'
+    if(a.PersonEmail) addr += '<div>'+ htmlEncode(a.PersonEmail) +'</div>';
+    if(a.Phone) addr += '<div>'+ htmlEncode(a.Phone) +'</div>';
+    if(a.PersonMobilePhone) addr += '<div>'+ htmlEncode(a.PersonMobilePhone) +'</div>';
+    addr += '</div>'
+
+    $$('.cust_addr_ro').html(addr);
+    $$('.cust_addr_sec').fadeIn();
+}
+function is_bed_quote(q_l) {
+    var ig = (q_l.PBSI__Item__r && q_l.PBSI__Item__r.PBSI__Item_Group__r && q_l.PBSI__Item__r.PBSI__Item_Group__r.PBSI__Item_Group_Code__c ? q_l.PBSI__Item__r.PBSI__Item_Group__r.PBSI__Item_Group_Code__c : '');
+    return ig=='GB' || ig=='BED';
+}
+
+function reset_order_stat() {
+    $$('#view_ords4c').slideUp();
+    $$('#view_quotes4c').slideUp();
+    $$('#cust_orders_ro').html('');
+    $$('#cust_quotes_ro').html('');
+}
+function do_order_stat(acc_id) {
+    POS_Pages_Svcs_dev.orders_4acc(acc_id,function(result, event) { if(event.status) {
+
+console.log('do_order_stat');
+console.log(result);
+        var a_rt_n;
+        if( result.a_rts && result.account.RecordTypeId ) a_rt_n = result.a_rts[result.account.RecordTypeId];
+        else a_rt_n = 'Customer Account';
+        set_app_state('a_rt_n',a_rt_n);
+
+        set_app_state('acc_addr',result.account);
+        refresh_addr(app_state.acc_addr);
+
+        var ords = result.orders;
+        var odates = result.odates;
+        var olines = result.so_lines;
+        var ordrsHT = '';
+        for(var i1=0; i1<ords.length; i1++) {
+            var oHT;
+            var ord = ords[i1];
+            var ordt = odates[i1];
+            if(ord.Name && ord.PBSI__Status__c) oHT = ordt +'<br/>'+htmlEncode(ord.Name) + ' [' + ord.PBSI__Status__c+']';
+            if(ord.CurrencyIsoCode && ord.PBSI__Final_Order_Total__c) oHT += '<br/>' + htmlEncode(ord.CurrencyIsoCode) +' '+ htmlEncode(ord.PBSI__Final_Order_Total__c);
+            var oid = ord.Id;
+            var ord_btnHT = '';
+            ord_btnHT = '<div class="ctrls_row_r whiteLabel" petype="chg_ord_btns" oid="'+oid+'"><a href="#order" oid="'+oid+'" data-icon="grid" data-role="button" data-inline="true" data-theme="a">View</a></div>';
+            var olineHT = [];
+            for(var i2=0; i2<olines.length; i2++) {
+                var olHT = '';
+                var sol = olines[i2];
+                if(sol.PBSI__Sales_Order__c != oid) continue;
+                if(sol.PBSI__Quantity_Needed__c) olHT += '<span class="sol_ro_qty">'+ sol.PBSI__Quantity_Needed__c +'</span> x ';
+                if(sol.PBSI__ItemDescription__c) olHT += '<span class="sol_ro_desc">'+ sol.PBSI__ItemDescription__c +'</span>';
+                olineHT.push( '<li>'+ olHT +'</li>' );
+            }
+            if(olineHT.length == 0) ordrsHT += '<div data-role="collapsible"><h3>'+ oHT +'</h3>No items'+ord_btnHT+'</div>';
+            else ordrsHT += '<div data-role="collapsible"><h3>'+ oHT +'</h3><ul>'+ olineHT.join('') +'</ul>'+ord_btnHT+'</div>';
+        }
+        $$('#cust_orders_ro').html(ordrsHT);
+        $$('#cust_orders_ro > div').collapsible();
+
+        var quots = result.quotes;
+        var q_dates = result.q_dates;
+        var q_lines = result.q_lines;
+
+
+        var quotesList = [];
+        for(var i1=0; i1<quots.length; i1++) {
+            var q = quots[i1];
+            var q_id = q.Id;
+            var q_t = q_dates[i1];
+
+            var qHT = '';
+            if(q.Name && q.PBSI__Status__c) qHT = q_t +'<br/>'+htmlEncode(q.Name) + ' [' + q.PBSI__Status__c+']';
+            if(q.CurrencyIsoCode && q.PBSI__Final_Quote_Total__c) qHT += '<br/>' + htmlEncode(q.CurrencyIsoCode) +' '+ htmlEncode(q.PBSI__Final_Quote_Total__c);
+
+            var q_btnHT = '';
+            if('Closed'!=q.PBSI__Status__c) q_btnHT = '<div class="ctrls_row_r whiteLabel" petype="q_ord_btns" q_id="'+q_id+'"><a href="#basket" data-icon="grid" data-role="button" data-inline="true" data-theme="a">Change Quote</a></div>';
+
+            var quoteLinesList = [];
+            for(var i2=0; i2<q_lines.length; i2++) {
+                var q_l = q_lines[i2];
+                if(q_l.PBSI__Quote__c != q_id) continue;
+                var q_q = (q_l.PBSI__Quantity__c) ? '<span class="q_l_ro_qty">'+ q_l.PBSI__Quantity__c +'</span> x ' : '';
+                var a_q_d = (q_l.PBSI__Description__c) ? '<span class="q_l_ro_desc">'+ q_l.PBSI__Description__c +'</span>' : '';
+                var q_d = (is_bed_quote(q_l)) ? '<span class="q_l_ro_desc">'+ q_l.Bed_Description__c +'</span>' : a_q_d;
+                quoteLinesList.push( '<li>'+ q_q + q_d +'</li>' );
+            }
+            var qlinesHT = (quoteLinesList.length == 0) ? '<li>No items</li>' : quoteLinesList.join('');
+            quotesList.push( '<div data-role="collapsible"><h3>'+ qHT +'</h3><div><ul>'+ qlinesHT +'</ul>'+q_btnHT+'</div></div>' );
+        }
+        $$('#cust_quotes_ro').html(quotesList.join(''));
+        $$('#cust_quotes_ro > div').collapsible();
+
+
+        $$('.whiteLabel[petype="chg_ord_btns"] a').buttonMarkup();
+        $$('.whiteLabel[petype="chg_ord_btns"]').removeClass('whiteLabel');
+        if(ords.length >0) $$('#view_ords4c').slideDown();
+        else $$('#view_ords4c').slideUp();
+
+        $$('.whiteLabel[petype="q_ord_btns"]').click( function(e) { set_app_state('curr_quote', $$(this).attr('q_id')); });
+        $$('.whiteLabel[petype="q_ord_btns"] a').buttonMarkup();
+        $$('.whiteLabel[petype="q_ord_btns"]').removeClass('whiteLabel');
+        if(quots.length >0) $$('#view_quotes4c').slideDown();
+        else $$('#view_quotes4c').slideUp();
+
+        $$('div[petype=chg_ord_btns]').click( function(e) { set_app_state('curr_order', $$(this).attr('oid')); });
+
+
+    } else remoting_err(event); },{escape:false});
+}
+
+function close_cust_panels() {
+    $$('#ords4c_panel').panel( "close" );
+    $$('#srch_res_panel').panel( "close" );
+    $$('#acc_dtl_panel').panel( "close" );
+}
+
+
+function do_new_cust() {
+    set_app_state('a_rt_n', 'Customer Account');
+    set_app_state('acc_addr', {
+        BillingStreet:'',
+        FirstName:'',
+        LastName:'',
+        BillingCity:'',
+        BillingState:'',
+        BillingPostalCode:'',
+        BillingCountry:'',
+        PersonEmail:'',
+        PersonMobilePhone:'',
+        Phone:''
+    });
+    reset_order_stat();
+    refresh_addr(app_state.acc_addr);
+    do_edit_cust();
+}
+function do_new_biz_cust() {
+    set_app_state('a_rt_n', 'Business Account');
+    set_app_state('acc_addr', {
+        BillingStreet:'',
+        Name:'',
+        BillingCity:'',
+        BillingState:'',
+        BillingPostalCode:'',
+        BillingCountry:'',
+        Phone:''
+    });
+    reset_order_stat();
+    refresh_addr(app_state.acc_addr);
+    do_edit_cust();
+}
+
+v_txt_patterns = {
+"alpha1": /^[^0-9!@£$%\^&*()_+{}[\]:;"'|\\<>,?/]*$/,
+"zip1": /^[0-9a-zA-Z -]{0,10}$/,
+"alphanum1": /^[^!@£$%\^&*()_+{}[\]:;"'|\\<>,?/]*$/,
+"phone": /^\+?[0-9 +]{0,16}$/,
+"wild1": /^.*$/,
+"email": /^[a-zA-Z0-9+_.-]*@?[a-zA-Z0-9.-]*$/,
+"prenom1": /^[a-zA-Z .]*$/,
+"int_pct1": /^(100|[0-9]{0,2})$/
+}
+function reprime_text_filters() {
+    jQuery('input[type="text"]').each(function() { 
+        var d = jQuery(this).val();
+        jQuery(this).data('vwas',d);
+    });
+}
+function set_text_filters() {
+    jQuery('input[type="text"]').each(function() { 
+        var ftyp = jQuery(this).attr('ftyp');
+        if(!ftyp || !(v_txt_patterns[ftyp])) ftyp = "wild1";
+        jQuery(this).keyup(function(event) {
+            var dw = jQuery(this).data('vwas');
+            var d = jQuery(this).val();
+            if(v_txt_patterns[ftyp].test(d)) {
+                jQuery(this).data('vwas', d );
+            } else {
+                jQuery(this).val( dw );
+            }
+        });
+        jQuery(this).change(function(event) {
+            var dw = jQuery(this).data('vwas');
+            var d = jQuery(this).val();
+            if(v_txt_patterns[ftyp].test(d)) {
+                jQuery(this).data('vwas', d );
+            } else {
+                jQuery(this).val( dw );
+            }
+        });
+    });
+    reprime_text_filters();
+}
+
+function do_edit_cust() {
+    $$('#acct_edit_err').text('');
+    var a_lines = [];
+    if( app_state.a_rt_n && app_state.a_rt_n=='Customer Account' ) {
+        $$('#acct_first_name').val(app_state.acc_addr.FirstName);
+        $$('#acct_last_name').val(app_state.acc_addr.LastName);
+        $$('#create_acct_div .priv_c').show();
+        $$('#create_acct_div .biz_c').hide();
+    } else {
+        $$('#acct_biz_name').val(app_state.acc_addr.Name);
+        $$('#create_acct_div .priv_c').hide();
+        $$('#create_acct_div .biz_c').show();
+    }
+    if(null!=app_state.acc_addr && null!=app_state.acc_addr.BillingStreet) a_lines = (app_state.acc_addr.BillingStreet).split('\n');
+    $$('#acct_addr1').val('');
+    $$('#acct_addr2').val('');
+    $$('#acct_addr3').val('');
+    if(a_lines.length>0) $$('#acct_addr1').val(a_lines[0]);
+    if(a_lines.length>1) $$('#acct_addr2').val(a_lines[1]);
+    if(a_lines.length>2) $$('#acct_addr3').val( a_lines.slice(2).join('\n') );
+    $$('#acct_city').val(app_state.acc_addr.BillingCity);
+    $$('#acct_state').val(app_state.acc_addr.BillingState);
+    $$('#acct_zip').val(app_state.acc_addr.BillingPostalCode);
+    $$('#acct_country').val(app_state.acc_addr.BillingCountry);
+    $$('#acct_email').val(app_state.acc_addr.PersonEmail);
+    $$('#acct_phone').val(app_state.acc_addr.Phone);
+    $$('#acct_mobile').val(app_state.acc_addr.PersonMobilePhone);
+    close_cust_panels();
+    reprime_text_filters();
+    $$('#acc_dtl_panel').panel( "open" );
+}
+
+function do_enter_order() {
+    console.log(do_enter_order);
+    console.log(app_state.acc_addr);
+    if(app_state && app_state.acc_addr && app_state.acc_addr.Id) {
+        POS_Pages_Svcs_dev.new_quote(app_state.acc_addr.Id,function(result, event) { if(event.status) {
+    console.log(result);
+            if( 1 == result.success) {
+                set_app_state('curr_quote',result.quote.Id);
+                $$.mobile.changePage('#sel_range');
+            }
+        } else remoting_err(event); },{escape:false});
+    }
+}
+
+function add_bed_2o() {
+    console.log('add_bed_2o');
+    console.log(bed_spec);
+    if(bed_spec) {
+        bed_spec.spec_type = 'bed_spec';        
+        POS_Pages_Svcs_dev.upsert_bed_line(app_state.curr_quote,bed_spec,function(result, event) { if(event.status) {
+    console.log(result);
+            if( 1 == result.success) {
+                $$.mobile.changePage('#basket');
+            }
+        } else remoting_err(event); },{escape:false});
+    }
+}
+
+function del_bed_from_ord() {
+    console.log('del_bed_from_ord');
+    console.log(bed_spec);
+    if(bed_spec) {
+        POS_Pages_Svcs_dev.del_bed_line(app_state.curr_quote,bed_spec,function(result, event) { if(event.status) {
+    console.log(result);
+            if( 1 == result.success) {
+                $$.mobile.changePage('#basket');
+            }
+        } else remoting_err(event); },{escape:false});
+    }
+}
+function del_accy_from_ord() {
+    console.log('del_accy_from_ord');
+    console.log(accy_spec);
+    if(accy_spec) {
+        POS_Pages_Svcs_dev.del_bed_line(app_state.curr_quote,accy_spec,function(result, event) { if(event.status) {
+    console.log(result);
+            if( 1 == result.success) {
+                $$.mobile.changePage('#basket');
+            }
+        } else remoting_err(event); },{escape:false});
+    }
+}
+
+
+function do_check_tax_addr(acc_id) {
+console.log('do_check_tax_addr');
+console.log(app_state.acc_addr);
+    POS_Pages_Svcs_dev.do_avatax_check(acc_id,false,function(result, event) { if(event.status) {
+console.log(result);
+        if( 1 == result.success) {
+            if( result.valid) {
+            $$('#acc_dtl_panel').panel( "close" );
+            } else {
+                $$('#acct_edit_err').text(result.addr_err_msg_smry+' [Avatax Check]');
+            }
+        } else {
+            if(result.error_code == 'D001') {
+                $$('#acct_edit_err').text('Avatax Connection Problem.');
+            } else {
+                $$('#acct_edit_err').text('Salesforce Connection Problem [do_check_tax_addr].');
+                console.log(result.error_msg);
+            }
+        }
+    } else remoting_err(event); },{escape:false});
+}
+
+function save_acct() {
+    var aa = {};
+    if( app_state.a_rt_n && app_state.a_rt_n=='Customer Account' ) {
+        if(''==$$('#acct_first_name').val()) { $$('#acct_edit_err').text('First name cannot be blank.'); return; }
+//      if(''==$$('#acct_last_name').val()) { $$('#acct_edit_err').text('Last name cannot be blank.'); return; }
+        if(''==$$('#acct_email').val() && ''==$$('#acct_phone').val()) { $$('#acct_edit_err').text('Both e-mail and phone cannot be blank.'); return; }
+    } else {
+        if(''==$$('#acct_biz_name').val()) { $$('#acct_edit_err').text('Name cannot be blank.'); return; }
+        if(''==$$('#acct_phone').val()) { $$('#acct_edit_err').text('Phone cannot be blank.'); return; }
+    }
+//    if(''==$$('#acct_zip').val()) { $$('#acct_edit_err').text('Zip/Post code cannot be blank.'); return; }
+    var a_lines = [$$('#acct_addr1').val(),$$('#acct_addr2').val(),$$('#acct_addr3').val()];
+    aa.BillingStreet = a_lines.join('\n');
+    aa.BillingCity = $$('#acct_city').val();
+    aa.BillingState = $$('#acct_state').val();
+    aa.BillingPostalCode = $$('#acct_zip').val();
+    aa.BillingCountry = $$('#acct_country').val();
+    aa.PersonEmail = $$('#acct_email').val();
+    aa.Phone = $$('#acct_phone').val();
+    aa.PersonMobilePhone = $$('#acct_mobile').val();
+    if(app_state.acc_addr.Id) aa.Id = app_state.acc_addr.Id;
+    if( app_state.a_rt_n && app_state.a_rt_n=='Customer Account' ) {
+        aa.FirstName = $$('#acct_first_name').val();
+        aa.LastName = $$('#acct_last_name').val();
+    } else {
+        aa.Name = $$('#acct_biz_name').val();
+    }
+    set_app_state('acc_addr',aa);
+console.log('save_acct');
+console.log(app_state.acc_addr);
+    POS_Pages_Svcs_dev.upsert_acc(app_state.acc_addr,app_state.a_rt_n,function(result, event) { if(event.status) {
+console.log(result);
+        if( 1 == result.success) {
+            set_app_state('acc_addr',result.account);
+            refresh_addr(app_state.acc_addr);
+            do_check_tax_addr(result.account.Id);
+        } else {
+            if(result.error_code == 'D002') {
+                $$('#acct_edit_err').text(result.error_msg);
+            } else {
+                $$('#acct_edit_err').text('Error while saving.');
+                console.log(result.error_msg);
+            }
+        }
+    } else remoting_err(event); },{escape:false});
+}
+
+
+// --- Functions for bed_picker page ---
+var bed_spec;
+var range_names = {"bed-continental":"Continental Beds","bed-adjustable":"Adjustable Beds","bed-frame":"Frame Beds"};
+var range_IGC = {"bed-continental":"CB","bed-adjustable":"ADJ","bed-frame":"FRA"};
+function do_bed_spec(r) {
+    bed_spec = {bed_range: range_names[r],bed_range_IGC: range_IGC[r],bed_model: null,bed_firmness: null,bed_size: null,bed_color: null,bed_topm: null,bed_legs: null,vip_clips:true};
+    $$.mobile.changePage('#order_bed');
+}
+function do_pick_accy() {
+    $$.mobile.changePage('#order_accs');
+}
+
+function cust_firmn_spec() {
+    if(null==bed_spec.bed_cust_firmness || ''==bed_spec.bed_cust_firmness) return '-';
+    else return bed_spec.bed_cust_firmness;
+}
+function bed_opts_spec() {
+    if(null==bed_spec.bed_base_split && null==bed_spec.bed_mattr_split) return '-';
+    else return ( bed_spec.bed_base_split=='Split' ? 'Split base' : 'One-piece base' ) + ', ' + ( bed_spec.bed_mattr_split=='Split' ? 'Split mattress' : 'One-piece mattress' );
+}
+
+function refresh_bed_smry() {
+    if(null!=bed_spec) {
+        $$('#bed_qty_edit').val(null==bed_spec.bed_qty ? '1' : bed_spec.bed_qty);
+        $$('#bed_range td.form_card1_val').text(bed_spec.bed_range);
+        $$('#bed_model td.form_card1_val').text( null==bed_spec.bed_model ? '-' : bed_spec.bed_model );
+        $$('#bed_firmness td.form_card1_val').text( null==bed_spec.bed_firmness ? '-' : bed_spec.bed_firmness );
+        $$('#bed_firmness_cust td.form_card1_val').text( cust_firmn_spec() );
+        if( null==bed_spec.bed_base_split ) bed_spec.bed_base_split = bed_options.base_struct_opts[0];
+        $$('#bed_base_cust td.form_card1_val').text( bed_spec.bed_base_split );
+        if( null==bed_spec.bed_mattr_split ) bed_spec.bed_mattr_split = bed_options.mattress_struct_opts[0];
+        $$('#bed_mattress_cust td.form_card1_val').text( bed_spec.bed_mattr_split );
+        $$('#bed_size td.form_card1_val').text( null==bed_spec.bed_size ? '-' : bed_spec.bed_size );
+        $$('#bed_size_cust td.form_card1_val').text( null==bed_spec.bed_cust_size ? '-' : bed_spec.bed_cust_size );
+        $$('#bed_color td.form_card1_val').text( null==bed_spec.bed_color ? '-' : bed_spec.bed_color );
+        $$('#bed_shortlist td.form_card1_val').text( null==bed_spec.bed_picked ? '-' : bed_spec.bed_picked );
+        $$('#bed_topm td.form_card1_val').text( null==bed_spec.bed_topm ? '-' : bed_spec.bed_topm );
+        $$('#bed_legs td.form_card1_val').text( null==bed_spec.bed_legs ? '-' : bed_spec.bed_legs );
+        $$('#edit_vip').prop('checked',bed_spec.vip_clips ? true : false);
+        $$('#edit_vip').checkboxradio( "refresh" );
+        $$('#edit_nameplates').prop('checked',bed_spec.nameplates ? true : false);
+        $$('#edit_nameplates').checkboxradio( "refresh" );
+    }
+}
+
+                    
+function do_set_size(cell,szid) {
+console.log(cell)
+console.log(szid)
+    bed_spec.bed_size = szid;
+    refresh_bed_smry();
+}
+
+function range_options() {
+    var opts_list = [];
+    for(var itm in range_names) opts_list.push({Name: range_names[itm],r:itm});
+    return opts_list;
+}
+
+function counted_options(count_map) {
+    var opts_list = [];
+    for(var itm in count_map) opts_list.push({Name: itm});
+    return opts_list;
+}
+
+function plain_options(pl) {
+    var opts_list = [];
+    for(var i=0;i<pl.length;i++) opts_list.push({Name: pl[i]});
+    return opts_list;
+}
+
+function size_options(bed_szs_map) {
+    var bed_szs_list = [];
+    for(var bsz in bed_szs_map) if('x'!=bsz) bed_szs_list.push({Name: bsz});
+    return bed_szs_list;
+}
+
+function confi_options(cis) {
+    for(var i=0; i< cis.length; i++) {
+        var ci = cis[i];
+        if( !ci || !ci.PBSI__Item__r || !ci.PBSI__Item__r.PBSI__description__c || !ci.PBSI__Item__r.Name ) continue;
+        ci.PBSI__description__c = ci.PBSI__Item__r.PBSI__description__c;
+        ci.Item_Name = ci.PBSI__Item__r.Name;
+    }
+    return cis;
+}
+
+
+
+function do_reset_bed() {
+    bed_spec.bed_model = null;
+    bed_spec.model_dtl = null;
+    bed_spec.model_id = null;
+    bed_spec.bed_size = null;
+    bed_spec.bed_cust_size = null;
+    bed_spec.bed_color = null;
+    bed_spec.bed_firmness = null;
+    bed_spec.bed_cust_firmness = null;
+    bed_spec.bed_topm = null;
+    bed_spec.bed_legs = null;
+    bed_spec_pg_update();
+}                  
+function do_set_model(itm_id) {
+    $$('#pick_model_panel').panel( "close" );
+    var opts = bed_options.model_o;
+    var matched = null;
+    for(var i=0; i< opts.length;i++) { 
+        var v = opts[i];
+        if( v.Id == itm_id ) {
+            matched = v;
+            break;
+        }
+    }
+    if( v!=null ) {
+        bed_spec.bed_model = v.Name;
+        bed_spec.model_dtl = v;
+        bed_spec.model_id = v.Id;
+
+        bed_spec.bed_topm = null;
+        bed_spec.bed_legs = null;
+        bed_spec.bed_color = null;
+    }
+    bed_spec_pg_update();
+}
+
+function do_set_size(sz_name) {
+    $$('#pick_size_panel').panel( "close" );
+    if( sz_name!=null ) {
+        bed_spec.bed_size = sz_name;
+    }
+    bed_spec_pg_update();
+}
+function do_set_cust_size() {
+    $$('#custom_size_panel').panel( "close" );
+    var b_w = parseInt( $$('#cust_width').val() );
+    var b_l = parseInt( $$('#cust_length').val() );
+    if( isNaN(b_w) || b_w==0 || isNaN(b_l) || b_l==0 ) bed_spec.bed_cust_size = null;
+    else {
+        bed_spec.bed_cust_size = '' + b_w + 'x' + b_l;
+    }
+    bed_spec_pg_update();
+}
+
+function do_set_fabric(fab_name) {
+    $$('#pick_color_panel').panel( "close" );
+    bed_spec.bed_color = fab_name;
+    bed_spec_pg_update();
+}
+                   
+function do_set_firmness(fmn_name) {
+    $$('#pick_firmness_panel').panel( "close" );
+    bed_spec.bed_firmness = fmn_name;
+    bed_spec_pg_update();
+}
+
+function do_set_base(base_struct) {
+    $$('#bed_base_split_panel').panel( "close" );
+    bed_spec.bed_base_split = base_struct;
+    bed_spec_pg_update();
+}
+
+function do_set_mattr(mattr_struct) {
+    $$('#mattress_split_panel').panel( "close" );
+    bed_spec.bed_mattr_split = mattr_struct;
+    bed_spec_pg_update();
+}
+            
+function do_set_legs(itm_id) {
+    $$('#pick_legs_panel').panel( "close" );
+console.log('do_set_legs');
+console.log(itm_id);
+    var opts = bed_options.leg_o;
+    var matched = null;
+    for(var i=0; i< opts.length;i++) { 
+        var v = opts[i];
+        if( v.PBSI__Item__c == itm_id ) {
+            matched = v;
+            break;
+        }
+    }
+    if( matched!=null ) {
+        bed_spec.bed_legs = matched.PBSI__description__c;
+        bed_spec.legs_id = matched.PBSI__Item__c;
+        bed_spec.legs_n = matched.PBSI__Quantity__c;
+        bed_spec.leg_prc = matched.PBSI__Item__r.PBSI__salesprice__c;
+    }
+    bed_spec_pg_update();
+}
+                   
+function do_set_topm(itm_id) {
+    $$('#pick_topper_panel').panel( "close" );
+console.log('do_set_topm');
+console.log(itm_id);
+    var opts = bed_options.topper_o;
+    var matched = null;
+    for(var i=0; i< opts.length;i++) { 
+        var v = opts[i];
+        if( v.PBSI__Item__c == itm_id ) {
+            matched = v;
+            break;
+        }
+    }
+    if( matched!=null ) {
+        bed_spec.bed_topm = matched.PBSI__description__c +' '+ matched.Item_Name;
+        bed_spec.topm_id = matched.PBSI__Item__c;
+    }
+    bed_spec_pg_update();
+}
+
+function do_set_bed_qty() {
+    var b_q = parseInt($$('#bed_qty_edit').val());
+    if( isNaN(b_q) || b_q<1 ) {
+        b_q = 1;
+        $$('#bed_qty_edit').val(b_q);
+    }
+    bed_spec.bed_qty = b_q;
+}
+
+function do_bed_item_master(itm_id) {
+    window.open('/'+itm_id,'_blank');
+}
+
+function set_pick_list(el_sel,list,lbl_fld1,lbl_fld2,val_fld,click_f,taphold_f) {
+    var linesHT = '';
+    for(var i1=0; i1<list.length; i1++) {
+        var iHT = '<li><a sel-val="'+ list[i1][val_fld] +'" href="#">' + htmlEncode(list[i1][lbl_fld1])
+            + (lbl_fld2 ? '<div>'+list[i1][lbl_fld2]+'</div>' : '' ) + '</a></li>';
+        linesHT += iHT;
+    }
+    var listHT = '<ul data-role="listview" data-inset="true">' + linesHT + '</ul>';
+
+    $$(el_sel).html(listHT);
+    $$(el_sel + ' > ul').listview();
+    $$(el_sel + ' a').click( function(e) { click_f( $$(this).attr('sel-val') ); e.preventDefault(); });
+    if(null!=taphold_f) $$(el_sel + ' a').on( "taphold", function(e) { taphold_f( $$(this).attr('sel-val') ); });
+}
+function set_pick_list2(el_sel,list,lbl_fld1,lbl_fld2,val_fld,click_f,taphold_f) {
+    var linesHT = '';
+    for(var i1=0; i1<list.length; i1++) {
+        var iHT = '<li><a sel-val="'+ list[i1][val_fld] +'" href="#">' + htmlEncode(list[i1][lbl_fld1])
+            + (lbl_fld2 ? '<div>'+list[i1]['CurrencyIsoCode']+' '+list[i1][lbl_fld2]+'</div>' : '' ) + '</a></li>';
+        linesHT += iHT;
+    }
+    var listHT = '<ul data-role="listview" data-inset="true">' + linesHT + '</ul>';
+
+    $$(el_sel).html(listHT);
+    $$(el_sel + ' > ul').listview();
+    $$(el_sel + ' a').click( function(e) { click_f( $$(this).attr('sel-val') ); e.preventDefault(); });
+    if(null!=taphold_f) $$(el_sel + ' a').on( "taphold", function(e) { taphold_f( $$(this).attr('sel-val') ); });
+}
+function clear_pick_list(el_sel) {
+    $$(el_sel).html('');
+}
+
+function bed_spec_row_hide_list(hides,shows) {
+    for(var i=0; i<hides.length; i++) $$( hides[i] ).fadeOut();
+    for(var i=0; i<shows.length; i++) $$( shows[i] ).fadeIn();
+    $$( '.showme' ).fadeIn();
+}
+function bed_spec_row_hides() {
+    if( bed_options && bed_options.bed_matches ) {
+        bed_spec_row_hide_list([],['#bed_qty','#bed_model','#bed_size','#bed_color','#bed_firmness','#bed_topm','#bed_legs','#bed_base_cust','#bed_mattress_cust']);
+    } else  if( null!=bed_spec.bed_model ) {
+        bed_spec_row_hide_list([],['#bed_qty','#bed_model','#bed_size','#bed_color','#bed_firmness','#bed_topm','#bed_legs','#bed_base_cust','#bed_mattress_cust']);
+    } else {
+        bed_spec_row_hide_list(['#bed_size','#bed_topm','#bed_legs','#bed_color'],['#bed_qty','#bed_range','#bed_model','#bed_firmness','#bed_base_cust','#bed_mattress_cust']);
+        $$('#pick_model_panel').panel( "open" );
+    }
+    if( null!=bed_spec.bed_firmness && 'CUSTOM'== bed_spec.bed_firmness.slice(0,6) ) $$( '#bed_firmness_cust' ).fadeIn();
+    else $$( '#bed_firmness_cust' ).fadeOut();
+    if( null!=bed_spec.bed_size ) $$( '#bed_size_cust' ).fadeIn();
+    else $$( '#bed_size_cust' ).fadeOut();
+
+    if( null!=bed_options.v_c && null!=bed_options.v_c.Id ) $$( '#bed_clips' ).fadeIn();
+    else {
+        $$( '#bed_clips' ).fadeOut();
+        bed_spec.vip_clips = false;
+    }
+    
+    if( null!=bed_options.nameplates && null!=bed_options.nameplates.Id ) $$( '#bed_nameplates' ).fadeIn();
+    else {
+        $$( '#bed_nameplates' ).fadeOut();
+        bed_spec.nameplates = false;
+    }
+
+    var complete = true;
+    for(var fld in {'bed_range':true,'model_id':true,'bed_size':true,'bed_color':true,'bed_firmness':true,'bed_legs':true,'bed_topm':true}) {
+        complete = complete && (null!= bed_spec[fld]);
+    }
+    if(complete && ! bed_spec.model_id) { complete = false; alert('There is no stock ID for this selection. Please contact a system administrator.'); }
+    if(complete) $$('.add2_order').fadeIn();
+    else $$('.add2_order').fadeOut();
+}
+
+var ranges_set = false;
+var bed_options = {bed_range: null, model_o: null, size_o: null};
+function bed_spec_pg_update() {
+console.log('Bed spec:');
+console.log(bed_spec);
+    POS_Pages_Svcs_dev.list_bed_options(bed_spec,function(result, event) { if(event.status) {
+        bed_options = result;
+console.log(bed_options);
+        if(!ranges_set) {
+            set_pick_list('#range_choices',range_options(),'Name',null,'r',do_bed_spec,null);
+            ranges_set = true;
+        }
+        if(result.model_o) {
+            set_pick_list('#model_choices',result.model_o,'Name',null,'Id',do_set_model,null);
+        } else clear_pick_list('#model_choices');
+        if(result.size_opts) {
+            set_pick_list('#size_choices',plain_options(result.size_opts),'Name',null,'Name',do_set_size);
+        } else clear_pick_list('#size_choices');
+        if(result.bed_color_opts_m) {
+            set_pick_list('#color_choices',plain_options(result.bed_color_opts_m),'Name',null,'Name',do_set_fabric,null);
+        } else clear_pick_list('#color_choices');
+        if(result.firmness_opts) {
+            set_pick_list('#firmness_choices',plain_options(result.firmness_opts),'Name',null,'Name',do_set_firmness,null);
+        } else clear_pick_list('#firmness_choices');
+        if(result.base_struct_opts) {
+            set_pick_list('#bed_base_choices',plain_options(result.base_struct_opts),'Name',null,'Name',do_set_base,null);
+        } else clear_pick_list('#bed_base_choices');
+        if(result.mattress_struct_opts) {
+            set_pick_list('#mattress_choices',plain_options(result.mattress_struct_opts),'Name',null,'Name',do_set_mattr,null);
+        } else clear_pick_list('#mattress_choices');
+        if(result.leg_o) {
+            set_pick_list('#legs_choices',confi_options(result.leg_o),'PBSI__description__c',null,'PBSI__Item__c',do_set_legs,null);
+        } else clear_pick_list('#legs_choices');
+        if(result.topper_o) {
+            set_pick_list('#topper_choices',confi_options(result.topper_o),'PBSI__description__c',null,'PBSI__Item__c',do_set_topm,null);
+        } else clear_pick_list('#topper_choices');
+        if( result.bed_matches ) {
+            var prc;
+            bed_spec.n_prc = bed_options.bed_matches.length;
+            if(bed_spec.n_prc == 1) {
+                var itm = bed_options.bed_matches[0];
+//              bed_spec.prc = itm.PBSI__salesprice__c;
+                bed_spec.ccy = itm.CurrencyIsoCode;
+                bed_spec.item_id = itm.Id;
+            } else bed_spec.item_id = null;
+        }
+        if(bed_spec && bed_spec.ql_id) {
+            $$( '#del_sol_btn' ).show();
+            $$( '.add2_order .ui-btn-text' ).text('Update Order');
+        } else { 
+            $$( '#del_sol_btn' ).hide();
+            $$( '.add2_order .ui-btn-text' ).text('Add to Order');
+        }
+
+        refresh_bed_smry();
+        bed_spec_row_hides();
+    } else remoting_err(event); },{escape:false});
+}
+
+
+var accy_options = {};
+var accy_spec = {};
+function do_set_accy_type(t) {
+    $$('#pick_accy_type_panel').panel( "close" );
+    accy_spec.accy_type = t;
+    var types_l = accy_options.types_l;
+    for(var i=0;i<types_l.length;i++) {
+        if(types_l[i].Id == accy_spec.accy_type) {
+            accy_spec.type_desc = types_l[i].Name;
+            accy_spec.accy_keys = '';
+            accy_spec.accy_size = null;
+            accy_spec.accy_dtl = null;
+            accy_spec.accy_picked = null;
+        }
+    }
+    accy_spec_pg_update();
+}
+function do_set_accy(itm_id) {
+    $$('#accy_shortlist_panel').panel( "close" );
+    var opts = accy_options.accy_matches;
+    var matched = null;
+    for(var i=0; i< opts.length;i++) { 
+        var v = opts[i];
+        if( v.Id == itm_id ) {
+            matched = v;
+            break;
+        }
+    }
+    if( v!=null ) {
+        accy_spec.accy_picked = v.PBSI__description__c;
+        accy_spec.accy_num = v.Name;
+        accy_spec.item_id = v.Id;
+        accy_spec.accy_dtl = v;
+
+        if(v.Bed_Size__c && v.Bed_Size__c!='x') accy_spec.accy_size = v.Bed_Size__c;
+    }
+    accy_spec_pg_update();
+}
+function do_set_accy_size(sz_name) {
+    $$('#pick_accy_size_panel').panel( "close" );
+    if( sz_name!=null ) {
+        accy_spec.accy_size = sz_name;
+        accy_spec.accy_dtl = null;
+    }
+    accy_spec_pg_update();
+}
+function set_accy_keys() {
+    var kw = $$('#accy_keys_editor').val();
+    $$('#accy_keywords_panel').panel( "close" );
+    if( kw!=null ) {
+        accy_spec.accy_keys = kw;
+        accy_spec.accy_size = null;
+        accy_spec.accy_dtl = null;
+    }
+    accy_spec_pg_update();
+}
+function set_inum() {
+    var inum = $$('#inum_editor').val();
+    $$('#accy_keywords_panel').panel( "close" );
+console.log('set_inum');
+console.log(inum);
+    if( inum!=null ) {
+        accy_spec.accy_inum = inum;
+        accy_spec.accy_keys = '';
+        accy_spec.accy_size = null;
+        accy_spec.accy_dtl = null;
+    }
+    accy_spec_pg_update();
+}
+function add_accy_2o() {
+    console.log('add_accy_2o');
+    console.log(accy_spec);
+    if(accy_spec && accy_spec.accy_dtl) {
+        accy_spec.spec_type = 'accy_spec';
+        POS_Pages_Svcs_dev.upsert_accy_line(app_state.curr_quote,accy_spec,function(result, event) { if(event.status) { 
+    console.log(result);
+            if( 1 == result.success) {
+                $$.mobile.changePage('#basket');
+            }
+        } else remoting_err(event); },{escape:false});
+    }
+}
+function do_set_accy_qty() {
+    var q = parseInt($$('#accy_qty_edit').val());
+    if( isNaN(q) || q<1 ) {
+        q = 1;
+        $$('#accy_qty_edit').val(q);
+    }
+    accy_spec.accy_qty = $$('#accy_qty_edit').val();
+}
+function do_open_quote_shipp() {
+    console.log('do_open_quote_shipp');
+    $$('#quote_ship_amt').val('');
+    $$('#quote_shipping_panel').panel( "open" );
+}
+function do_save_quote_shipp() {
+    console.log('do_save_quote_shipp');
+    var v = parseFloat( $$('#quote_ship_amt').val() );
+    if( isNaN(v) ) {
+        $$('#quote_ship_amt').val('');
+        return;
+    }
+    POS_Pages_Svcs_dev.upd_q_shipp_amt(app_state.curr_quote,v,function(result, event) { if(event.status) { 
+console.log(result);
+        if( 1 == result.success) {
+            $$('#quote_shipping_panel').panel( "close" );
+            $$.mobile.changePage('#basket');
+        }
+    } else remoting_err(event); },{escape:false});
+}
+function do_open_ord_shipp() {
+    console.log('do_open_ord_shipp');
+    $$('#ord_ship_amt').val('');
+    $$('#ord_shipping_panel').panel( "open" );
+}
+function do_save_ord_shipp() {
+    console.log('do_save_ord_shipp');
+    var v = parseFloat( $$('#ord_ship_amt').val() );
+    if( isNaN(v) ) {
+        $$('#ord_ship_amt').val('');
+        return;
+    }
+    POS_Pages_Svcs_dev.upd_ord_shipp_amt(app_state.curr_order,v,function(result, event) { if(event.status) { 
+console.log(result);
+        if( 1 == result.success) {
+            $$('#ord_shipping_panel').panel( "close" );
+            $$.mobile.changePage('#order');
+        }
+    } else remoting_err(event); },{escape:false});
+}
+
+function refresh_accy_smry() {
+console.log('refresh_accy_smry');
+console.log(accy_spec);
+    $$('#accy_qty_edit').val(null==accy_spec.accy_qty ? '1' : accy_spec.accy_qty);
+    if( accy_spec.accy_type ) {
+        $$('#accy_type .form_card1_val').text( accy_spec.type_desc );
+    } else {
+        $$('#accy_type .form_card1_val').text( '' );
+    }
+    if( accy_spec.accy_dtl ) {
+        $$('#accy_shortlist .form_card1_val').text( accy_spec.accy_picked );
+        $$('#accy_itemnum .form_card1_val').text( accy_spec.accy_num );
+        $$('.accy_add2_order').fadeIn();
+    } else {
+        $$('#accy_shortlist .form_card1_val').text( '' );
+        $$('#accy_itemnum .form_card1_val').text( '' );
+        $$('.accy_add2_order').fadeOut();
+    }
+    $$('#accy_size .form_card1_val').text( accy_spec.accy_size ? accy_spec.accy_size : '' );
+    if( accy_spec.accy_keys && ''!=accy_spec.accy_keys ) {
+        $$('#accy_keywords .form_card1_val').text( accy_spec.accy_keys );
+    } else {
+        $$('#accy_keywords .form_card1_val').text( '' );
+        $$('#accy_keys_editor').val('');
+    }
+}
+var curr_pg = 0;
+function accy_spec_pg_update_pg(pg) {
+console.log('Accessories options:');
+    curr_pg = pg;
+    POS_Pages_Svcs_dev.list_accy_options(accy_spec,pg,function(result, event) { if(event.status) {
+console.log(result);
+        accy_options = result;
+        set_pick_list('#accy_type_choices',result.types_l,'Name',null,'Id',do_set_accy_type,null);
+        if(result.accy_matches && result.n_matches>0) {
+            if(result.n_matches>20) result.accy_matches.pop();
+            set_pick_list('#accy_shortlist_choices',result.accy_matches,'PBSI__description__c',null,'Id',do_set_accy,do_bed_item_master);
+            if(result.n_matches>20) $$('#accy_more_btn').show();
+            else $$('#accy_more_btn').hide();
+            if(curr_pg>0) $$('#accy_prev_btn').show();
+            else $$('#accy_prev_btn').hide();
+        } else {
+            $$('#accy_shortlist_choices').html('No items matched your selections.');
+            $$('#accy_more_btn').hide();
+            $$('#accy_prev_btn').hide();
+        }
+        if(result.size_o && !isEmpty(result.size_o)) {
+            set_pick_list('#accy_size_choices',size_options(result.size_o),'Name',null,'Name',do_set_accy_size);
+//          $$('#pick_accy_size_panel').panel( "open" );
+            $$('#accy_size').fadeIn();
+        } else $$('#accy_size').fadeOut();
+        if(accy_spec && accy_spec.ql_id) {
+            $$( '#del_accy_sol_btn' ).show();
+            $$( '.accy_add2_order .ui-btn-text' ).text('Update Order');
+        } else { 
+            $$( '#del_accy_sol_btn' ).hide();
+            $$( '.accy_add2_order .ui-btn-text' ).text('Add to Order');
+        }
+        $$('#accy_shortlist_panel').panel( "open" );
+
+        refresh_accy_smry();
+//      bed_spec_row_hides();
+    } else remoting_err(event); },{escape:false});
+
+}
+function accy_spec_pg_update() {
+    accy_spec_pg_update_pg(0);
+}
+
+// --- Functions for basket / order summary page ---
+function do_open_quote_line(ql_id) {
+    console.log('do_open_quote_line');
+    console.log(ql_id);
+    if( !quote_line_specs || !quote_line_specs[ql_id] || !quote_line_specs[ql_id].POS_Item_Spec__c ) {
+        alert('The information required to edit this line is not available. The order may not have been created with this POS tool.');
+        return;
+    }
+    console.log(quote_line_specs[ql_id]);
+    var spec = JSON.parse(quote_line_specs[ql_id].POS_Item_Spec__c);
+    if(spec.spec_type=='bed_spec') {
+        bed_spec = spec;
+        bed_spec.ql_id = ql_id;
+        bed_spec.vip_clips = ('true'==bed_spec.vip_clips);
+        $$.mobile.changePage('#order_bed');
+    } else {
+        accy_spec = spec;
+        accy_spec.ql_id = ql_id;
+        $$.mobile.changePage('#order_accs');
+    }   
+}
+
+var curr_disc_ql;
+var curr_disc_line_val;
+function do_open_ql_disc(ql_id) {
+    console.log('do_open_ql_disc');
+    console.log(ql_id);
+    $$('#quote_discounts_panel').panel( "open" );
+    curr_disc_ql = ql_id;
+    $$('#quote_disc_form_err').text('');
+    POS_Pages_Svcs_dev.get_disc_ql(ql_id,function(result, event) { if(event.status) { 
+console.log(result);
+        if( 1 == result.success) {
+            if(result.q_line.PBSI__Sale_Price__c && result.q_line.PBSI__Quantity__c) {
+                curr_disc_line_val = result.q_line.PBSI__Sale_Price__c * result.q_line.PBSI__Quantity__c;
+                $$('#quote_disc_amt').val(null==result.q_line.PBSI__Discount__c ? 0 : result.q_line.PBSI__Discount__c * curr_disc_line_val / 100);
+            }
+            //Display discount list
+            var discList = '<option value="0">None</option>';
+            for(var i1=0; i1<result.discounts.length; i1++) {
+                var d = result.discounts[i1];
+                
+                if(d.Discount__c==result.q_line.PBSI__Discount__c){
+                    discList += '<option value="' + d.Discount__c + '" selected>' 
+                }else {
+                    discList += '<option value="' + d.Discount__c + '" >' 
+                }
+                discList += d.Name + '</input>';
+                 
+            }
+            $$('#disc_select').html(discList).selectmenu('refresh');
+            $$('#quote_disc_pct').val(result.q_line.PBSI__Discount__c);
+            $$('#disc_reason').val(result.q_line.Discount_Reason__c);
+            if(!result.q_line.PBSI__Discount__c || 0==result.q_line.PBSI__Discount__c) $$('#quote_disc_pct').val('');
+            /*
+            if(result.q_leg) {
+                $$('.form_legs_disc').show();
+                $$('#quote_disc_legs_pct').val(result.q_leg.PBSI__Discount__c);
+                if(!result.q_leg.PBSI__Discount__c || 0==result.q_leg.PBSI__Discount__c) $$('#quote_disc_legs_pct').val('');
+            } else $$('.form_legs_disc').hide();
+            */
+            if(result.isBed) {
+                $$('.form_apply_disc').show();
+            } else $$('.form_apply_disc').hide();
+        }} else remoting_err(event); 
+    },{escape:false});
+}
+// If fld='main': save discount for selected item 
+// If fld='all': save discount for selected item and all related items (i.e child items)
+function do_save_ql_disc(ql_id,fld,pct_val, reason) {
+    console.log('do_save_ql_disc');
+    console.log(ql_id);
+    POS_Pages_Svcs_dev.set_disc_ql(ql_id,fld,pct_val, reason, function(result, event) { if(event.status) { 
+console.log(result);
+        if( 1 == result.success) {
+            $$('#quote_discounts_panel').panel( "close" );
+            $$.mobile.changePage('#basket');
+        }} else remoting_err(event); 
+    },{escape:false});
+}
+function upd_ql_disc_pct() {
+    console.log('upd_ql_disc_pct');
+    console.log(curr_disc_ql);
+    var dpct = parseFloat($$('#quote_disc_pct').val());
+    if(isNaN(dpct)) { $$('#quote_disc_form_err').text('Not a valid Discount %'); return; }
+    if(dpct<0 || dpct>100) { $$('#quote_disc_form_err').text('Discount range is 0 to 100%'); return; }
+    $$('#quote_disc_form_err').text('');
+    var fld = 'main';
+    if($$('#apply_disc').is(':visible') && $$('#apply_disc').is(':checked')) fld='all';
+    console.log('apply disc: ' + fld);
+    var reason = $$('#disc_reason').val();
+    do_save_ql_disc(curr_disc_ql,fld,dpct, reason);
+}
+function upd_ql_disc_amt() {
+    console.log('upd_ql_disc_amt');
+    console.log(curr_disc_ql);
+    if(isNaN(curr_disc_line_val)) { $$('#quote_disc_form_err').text('No line value'); return; }
+    var d_amt = parseFloat($$('#quote_disc_amt').val());
+    if(isNaN(d_amt)) { $$('#quote_disc_form_err').text('Not a valid amount'); return; }
+    if(d_amt<0 || d_amt>curr_disc_line_val) { $$('#quote_disc_form_err').text('Discount range is 0 to '+curr_disc_line_val); return; }
+    $$('#quote_disc_form_err').text('');
+    var fld = 'main';
+    if($$('#apply_disc').is(':visible') && $$('#apply_disc').is(':checked')) fld='all';
+    var dpct = 100 * d_amt /curr_disc_line_val;
+    var reason = $$('#disc_reason').val();
+    do_save_ql_disc(curr_disc_ql,fld,dpct, reason);
+}
+function upd_ql_disc_legs() {
+    console.log('upd_ql_disc_legs');
+    console.log(curr_disc_ql);
+    var dpct = parseFloat($$('#quote_disc_legs_pct').val());
+    if(isNaN(dpct)) { $$('#quote_disc_form_err').text('Not a valid Discount %'); return; }
+    if(dpct<0 || dpct>100) { $$('#quote_disc_form_err').text('Discount range is 0 to 100%'); return; }
+    $$('#quote_disc_form_err').text('');
+    do_save_ql_disc(curr_disc_ql,'legs',dpct);  
+}
+function upd_ql_full_disc_legs() {
+    console.log('upd_ql_full_disc_legs');
+    console.log(curr_disc_ql);
+    $$('#quote_disc_legs_pct').val('100');
+    upd_ql_disc_legs();
+}
+
+function refresh_co_addr(u) {
+    var addr = '';
+    addr += '<div class="addr_ctact">';
+    if(u.Email) addr += '<div class="addr_e-mail">'+ htmlEncode(u.Email) +'</div>';
+    else addr += '<div class="addr_e-mail">beds@hastens.com</div>';
+    if(u.Phone) addr += '<div class="addr_phone"><span class="ro_lbl">Tel:</span>'+ htmlEncode(u.Phone) +'</div>';
+    else addr += '<div class="addr_phone"><span class="ro_lbl">Tel:</span>+46(0)221-274 00</div>';
+    if(u.Fax) addr += '<div class="addr_fax"><span class="ro_lbl">Fax:</span>'+ htmlEncode(u.Fax) +'</div>';
+    else addr += '<div class="addr_fax"><span class="ro_lbl">Fax:</span>+46(0)221-274 19</div>';
+    addr += '</div>';
+    addr += '</div><div class="addr_loc">';
+    if(u.Street || u.City || u.State || u.Country || u.PostalCode) {
+        if(u.Street) addr += '<div class="addr_street">'+ htmlEncode(u.Street) +'</div>';
+        if(u.City) addr += '<div class="addr_city">'+ htmlEncode(u.City) +'</div>';
+        if(u.State) addr += '<div class="addr_state">'+ htmlEncode(u.State) +'</div>';
+        if(u.Country) addr += '<div class="addr_country">'+ htmlEncode(u.Country) +'</div>';
+        if(u.PostalCode) addr += '<div class="addr_zip">'+ htmlEncode(u.PostalCode) +'</div>';
+    } else {
+        addr += '<div class="addr_street">Nya Hamnvägen 7</div>';
+        addr += '<div class="addr_city">731 23 Köping</div>';
+        addr += '<div class="addr_country">Sweden ‎</div>';
+    }
+    $$('.hastens_addr_ro').html(addr);
+}
+
+function fcr_1(lbl,fval) {
+    if(null==fval) return '';
+    else return '<tr><td class="form_card1_lbl">'+lbl+':</td><td id="bed_range">'+fval+'</td></tr>';
+}
+
+var tax_errors = null;
+function do_avatax_quote_upd(q_id) {
+    POS_Pages_Svcs_dev.do_avatax_quote_check(q_id,false,false,function(result, event) { if(event.status) {
+console.log('do_avatax_quote_upd');
+console.log(result);
+        if( 0 == result.success) { 
+            if( result.tax_errors && result.tax_errors.length >0 ) tax_errors = result.tax_errors;
+            else tax_errors = null;
+            return; 
+        }
+        if(result.tax_err_msg_code == 'Exception') {
+            alert('AvaTax: '+result.tax_err_msg_smry);
+            return;
+        }
+
+    } else remoting_err(event); },{escape:false});
+}
+
+function do_avatax_checkout(q_id) {
+    POS_Pages_Svcs_dev.do_avatax_quote_check(q_id,true,false,function(result, event) { if(event.status) {
+console.log('do_avatax_checkout');
+console.log(result);
+        if( 0 == result.success) { 
+            return; 
+        }
+
+    } else remoting_err(event); },{escape:false});
+}
+
+var quote_line_specs;
+function refresh_quote_smry(q_id) {
+    do_avatax_quote_upd(q_id);
+    POS_Pages_Svcs_dev.quote_summ_html(q_id,function(result, event) { if(event.status) {
+console.log('refresh_quote_smry');
+console.log(result);
+        if( 0 == result.success) { return; }
+        refresh_co_addr(result.user);
+
+        $$('.quote_content').html(result.order_html);
+        $$('.q_bed_list_h, .q_dtls_h, .q_sum_h').addClass('ui-btn-up-a');
+        $$('.ql_edit_btn,.ship_edit_btn,.ql_disc_btn').button();
+        $$('.ql_edit_btn').click( function(e) { 
+            e.preventDefault();
+            do_open_quote_line($$(this).attr('ql_id'));
+        });
+        $$('.ql_disc_btn').click( function(e) { 
+            e.preventDefault();
+            do_open_ql_disc($$(this).attr('ql_id'));
+        });
+        
+        $$('#basket .ship_edit_btn').click( function(e) { 
+            do_open_quote_shipp();
+        });
+        $$('.quote_body').fadeIn();
+        quote_line_specs = result.q_l_specs;
+        set_app_state('quote_summ', result.quote);
+        ini_quote_order_btn();
+    } else remoting_err(event); },{escape:false});
+}
+
+function refresh_order_smry(o_id) {
+    POS_Pages_Svcs_dev.order_summ_html(o_id,function(result, event) { if(event.status) {
+console.log('refresh_order_smry');
+console.log(result);
+        if( 0 == result.success) { return; }
+        refresh_co_addr(result.user);
+        $$('.order_content').html(result.order_html);
+        $$('.q_bed_list_h, .q_dtls_h, .q_sum_h').addClass('ui-btn-up-a');
+        $$('.ship_edit_btn').button();
+        $$('#order .ship_edit_btn').click( function(e) { 
+            do_open_ord_shipp();
+        });
+        $$('#ord_pay_amt').val(result.o_balance);
+        set_app_state('o_balance', result.o_balance);
+        set_app_state('o_balance', result.o_balance);
+        set_app_state('o_order', result.order);
+        set_app_state('o_account', result.account);
+        set_app_state('ssn_id', result.ssn_id);
+        $$('.order_body').fadeIn();     
+        ini_print_order_btn();
+    } else remoting_err(event); },{escape:false});
+}
+
+function quote_pg_loaded() {
+    console.log('quote_pg_loaded');
+    console.log(app_state.curr_quote);
+    refresh_quote_smry(app_state.curr_quote);
+}
+
+function order_pg_loaded() {
+    console.log('order_pg_loaded');
+    console.log(app_state.curr_order);
+    refresh_order_smry(app_state.curr_order);
+}
+
+function do_quote2checkout() {
+    if( null!= tax_errors ) {
+        alert('Checkout is prevented due to: ' + tax_errors.join(',\n') );
+        return;
+    }
+    POS_Pages_Svcs_dev.do_POS_quote2so(app_state.curr_quote,function(result, event) { if(event.status) {
+        if(result.success==1) {
+            console.log('do_POS_quote2so');
+            console.log(result);
+            set_app_state('curr_order', result.so_id);
+            $$.mobile.changePage('#order');
+            do_avatax_checkout(app_state.curr_quote);
+        } else { console.log('do_POS_quote2so - bad reply'); console.log(result); }
+    } else remoting_err(event); },{escape:false});
+
+}
+
+var no_conga = false;
+function ini_quote_order_btn() {
+    if(! app_state.quote_summ || ! app_state.quote_summ.Id) return '';
+    var print_ord_url_parts = [quote_btn_url,'&eid=',app_state.quote_summ.Id];
+    if(no_conga) print_ord_url_parts = ['/',app_state.quote_summ.Id];
+    $$('.btn_print_quote').attr('href', print_ord_url_parts.join('') ); 
+}
+
+function ini_print_order_btn() {
+    if(! app_state.o_order || ! app_state.o_order.Id) return '';
+    var print_ord_url_parts = [order_btn_url,'&eid=',app_state.o_order.Id];
+    if(no_conga) print_ord_url_parts = ['/',app_state.o_order.Id];
+    $$('.btn_print_ord').attr('href', print_ord_url_parts.join('') ); 
+}
+
+function panel_inits() {
+    $$('.ord_pay_btn').click( function(e) { 
+        var amt = $$('#ord_pay_amt').val();
+        if(isNaN(amt)) {
+            e.preventDefault();
+            $$('#pay_form_err').text('Not a valid number');
+            return;
+        }
+        if( Number(amt) <0 ) {
+            e.preventDefault();
+            $$('#pay_form_err').text('Negative amounts are not allowed');
+            return;
+        }
+        if( Number(amt) == 0 ) {
+            e.preventDefault();
+            $$('#pay_form_err').text('Zero amounts are not allowed');
+            return;
+        }
+        if( app_state.o_balance && Number(amt) > app_state.o_balance ) {
+            e.preventDefault();
+            $$('#pay_form_err').text('You have entered an amount greater than the balance owed');
+            return;
+        }
+        $$('#pay_form_err').text('');
+        $$('#order_refr_panel').panel( "open" );
+        var pay_url_parts = [
+            '/apex/fw1__Payment?amount=',encodeURIComponent( amt ), 
+            '&accountId=',encodeURIComponent(app_state.o_order.PBSI__Customer__c),
+            '&lookupField=Sales_Order__c',
+            '&lookupId=',encodeURIComponent(app_state.o_order.Id), 
+            '&reference=',encodeURIComponent(app_state.o_order.Name),
+            '&Currency=',encodeURIComponent(app_state.o_order.CurrencyIsoCode), 
+            '&Lookupobject=PBSI__PBSI_Sales_Order__c',
+            '&paidAmountField=Paid_Amount__c',
+            '&Description1=',encodeURIComponent(app_state.o_account.Name),
+            '&Description2=',encodeURIComponent('Final Order Value= '),encodeURIComponent(app_state.o_order.Final_Order_Total_From_Quote__c),
+            '+', encodeURIComponent(app_state.o_order.CurrencyIsoCode),
+            '&processor=',encodeURIComponent('{!$User.RegionText__c}') ];
+        console.log('pay_url_parts');
+        console.log( pay_url_parts.join('') );
+        $$('.ord_pay_btn').attr('href', pay_url_parts.join('') ); 
+    });
+    $$('.ord_refr_btn').click( function(e) { 
+        e.preventDefault(); 
+        $$('#order_refr_panel').panel( "close" );
+        order_pg_loaded();
+    });
+}
+
+function work_inProgress(ft) {
+    alert('This feature is still under development and is not ready to be tested: '+ft);
+}
+
+$$(document).ready(function() {
+// Essential compatibility:
+    if(!console) { console.log = function(oj) {}; } // This stops console.log crashing IE9 -
+    if(!Modernizr.svg) $$('.h_logo').attr("src","{!URLFOR($Resource.Hastens_POS_styles, 'hastens_pos_styles/images/hlogo_white3.png')}");
+    if(!Modernizr.mq('only screen')) $$('html').addClass('nomqs');
+//console.log('window.matchMedia');
+//console.log(window.matchMedia);
+//console.log(Modernizr.mq('only screen'));
+
+// Layout and App
+    restore_app_state(); // Restore state. Recover from browser refresh.
+    // Account selection page
+    $$('#fillout_img1').show();
+    $$('#zip_srch_btn').click( function(e) { e.preventDefault(); do_zip_search(); });
+    $$('#name_srch_btn').click( function(e) { e.preventDefault(); do_name_search(); });
+    $$('#nw_acc_btn').click( function(e) { e.preventDefault(); do_new_cust(); });
+    $$('#nw_biz_acc_btn').click( function(e) { e.preventDefault(); do_new_biz_cust(); });
+    $$('#edit_acct').click( function(e) { e.preventDefault(); do_edit_cust(); });
+    $$('.nw_ordr_btn').click( function(e) { e.preventDefault(); do_enter_order(); });
+    $$('.save_ordr_btn').click( function(e) { e.preventDefault(); save_acct(); });
+    $$('.add2_order').click( function(e) { e.preventDefault(); add_bed_2o(); });
+    $$('.accy_add2_order').click( function(e) { e.preventDefault(); add_accy_2o(); });
+    $$('div[p_range|="bed"]').click( function(e) { e.preventDefault(); do_bed_spec($$(this).attr('p_range')); });
+    $$('div[p_range="accessy"]').click( function(e) { e.preventDefault(); do_pick_accy(); });
+    $$('#accy_keys_set').click( function(e) { e.preventDefault(); set_accy_keys(); });
+    $$('#accy_keys_editor').change( function(e) { e.preventDefault(); set_accy_keys(); });
+    $$('#inum_set').click( function(e) { e.preventDefault(); set_inum(); });
+    $$('#inum_editor').change( function(e) { e.preventDefault(); set_inum(); });
+
+    $$('#del_sol_btn').click( function(e) { 
+        e.preventDefault();
+        del_bed_from_ord();
+    });
+    $$('#del_accy_sol_btn').click( function(e) { 
+        e.preventDefault();
+        del_accy_from_ord();
+    });
+//  $$('#bed_range .form_card1_edit a').click( function(e) { e.preventDefault(); work_inProgress('Reselect Range'); });
+//  $$('#bed_topm .form_card1_edit a').click( function(e) { e.preventDefault(); work_inProgress('Select Mattress Topper'); });
+//  $$('#bed_legs .form_card1_edit a').click( function(e) { e.preventDefault(); work_inProgress('Select Legs'); });
+    $$('#btn_checkout').click( function(e) { e.preventDefault(); do_quote2checkout(); });
+    $$('#edit_vip').change( function(e) { e.preventDefault(); if(bed_spec) bed_spec.vip_clips = $$('#edit_vip').prop('checked'); });
+    $$('#edit_nameplates').change( function(e) { e.preventDefault(); if(bed_spec) bed_spec.nameplates = $$('#edit_nameplates').prop('checked'); });
+
+    $$('.btn_cust_acc').click( function(e) { 
+        if(app_state && app_state.acc_addr && app_state.acc_addr.Id) do_order_stat(app_state.acc_addr.Id);
+    });
+    $$('form').submit(function(e) { e.preventDefault(); return false; });
+    panel_inits();
+    $$('#accy_more_btn').click( function(e) { 
+        accy_spec_pg_update_pg(curr_pg+1);
+    });
+    $$('#accy_prev_btn').click( function(e) { 
+        accy_spec_pg_update_pg(curr_pg-1);
+    });
+    $$('#custom_size_apply').click( function(e) { 
+        do_set_cust_size();
+    });
+    $$('#bed_qty_edit').change( function(e) { 
+        do_set_bed_qty();
+    });
+    $$('#accy_qty_edit').change( function(e) { 
+        do_set_accy_qty();
+    });
+    $$('#quote_shipping_apply').click( function(e) { 
+        do_save_quote_shipp();
+    });
+    $$('#ord_shipping_apply').click( function(e) { 
+        do_save_ord_shipp();
+    });
+    $$('#quote_disc_pct_apply').click( function(e) { 
+        upd_ql_disc_pct();
+    });
+    $$('#quote_disc_amt_apply').click( function(e) { 
+        upd_ql_disc_amt();
+    });
+    $$('#quote_disc_legs_apply').click( function(e) { 
+        upd_ql_disc_legs();
+    });
+    $$('#quote_disc_legs_full').click( function(e) { 
+        upd_ql_full_disc_legs();
+    });
+    
+    $$(document).on( "pagechange", function(e,d) {
+console.log( 'pagechange' );
+console.log( d.options.target );
+console.log( $$.mobile.activePage.attr( "id" ) );
+        var pg_id = $$.mobile.activePage.attr( "id" );
+        if(pg_id == 'order_bed') { fback_pg= 'basket'; bed_spec_pg_update(); }
+        else if(pg_id =='lkup_acct') { fback_pg= 'lkup_acct'; cust_pg_loaded(); }
+        else if(pg_id=='basket') { fback_pg= 'basket'; accy_spec ={}; quote_pg_loaded(); }
+        else if(pg_id=='order') { fback_pg= 'order'; order_pg_loaded(); }
+        else if(pg_id=='order_accs') { fback_pg= 'basket'; accy_spec_pg_update(); }
+    });
+    set_text_filters();
+
+});
+
+    </script>
+</head>
+<body>
+    <div data-role="page" data-theme="a" id="lkup_acct">
+        <div id="srch_res_panel" data-role="panel" data-position="right" data-display="overlay" data-dismissible="false">
+            <div id="srch_res_wrap">
+                <h3 class="sctn_hdr"><a class="cancel_panel1" href="#" data-icon="delete" data-rel="close" data-role="button" data-inline="true" data-iconpos="notext" data-theme="c"></a>Search Results</h3>
+                <div id="srch_res"></div>
+            </div>
+        </div>
+        <div id="ords4c_panel" data-role="panel" data-position="right" data-display="overlay" data-dismissible="false">
+            <div id="ords4c_wrap">
+                    <h3 class="sctn_hdr"><a class="cancel_panel1" href="#" data-icon="delete" data-rel="close" data-role="button" data-inline="true" data-iconpos="notext" data-theme="c"></a>Existing Orders</h3>
+                    <div id="cust_orders_ro"></div>
+            </div>
+        </div>
+        <div id="quotes4c_panel" data-role="panel" data-position="right" data-display="overlay" data-dismissible="false">
+            <div id="quotes4c_wrap">
+                    <h3 class="sctn_hdr"><a class="cancel_panel1" href="#" data-icon="delete" data-rel="close" data-role="button" data-inline="true" data-iconpos="notext" data-theme="c"></a>Existing Quotes</h3>
+                    <div id="cust_quotes_ro"></div>
+            </div>
+        </div>
+        <div id="acc_dtl_panel" data-role="panel" data-position="right" data-display="overlay" data-dismissible="false">
+            <div id="acc_dtl_wrap">
+                <h3 class="sctn_hdr"><a class="cancel_panel1" href="#" data-icon="delete" data-rel="close" data-role="button" data-inline="true" data-iconpos="notext" data-theme="c"></a>Customer Details</h3>
+                <div id="create_acct_div">
+                    <div class="form_card1">
+                        <div class="form_card1_lbl"></div><div id="acct_edit_err"></div>
+                        <div class="form_card1_lbl biz_c">Business Name*</div><div class="biz_c"><input type="text" ftyp="alphanum1" name="acct_biz_name" id="acct_biz_name" data-theme="a"/></div>
+                        <div class="form_card1_lbl priv_c">First Name(s)*</div><div class="priv_c"><input type="text" ftyp="alpha1" name="acct_first_name" id="acct_first_name" data-theme="a"/></div>
+                        <div class="form_card1_lbl priv_c">Last Name*</div><div class="priv_c"><input type="text" ftyp="alpha1" name="acct_last_name" id="acct_last_name" data-theme="a"/></div>
+                        <div class="form_card1_lbl">Address</div><div><input type="text" ftyp="alphanum1" name="acct_addr1" id="acct_addr1" data-theme="a"/></div>
+                        <div class="form_card1_lbl"></div><div><input type="text" ftyp="alphanum1" name="acct_addr2" id="acct_addr2" data-theme="a"/></div>
+                        <div class="form_card1_lbl"></div><div><input type="text" ftyp="alphanum1" name="acct_addr3" id="acct_addr3" data-theme="a"/></div>
+                        <div class="form_card1_lbl">City</div><div><input type="text" ftyp="alphanum1" name="acct_city" id="acct_city" data-theme="a"/></div>
+                        <div class="form_card1_lbl">State</div><div><input type="text" ftyp="alphanum1" name="acct_state" id="acct_state" data-theme="a"/></div>
+                        <div class="form_card1_lbl">Zip Code*</div><div><input type="text" ftyp="zip1" name="acct_zip" id="acct_zip" data-theme="a"/></div>
+                        <div class="form_card1_lbl">Country*</div><div><input type="text" ftyp="alpha1" name="acct_country" id="acct_country" data-theme="a"/></div>
+                        <div class="form_card1_lbl priv_c">e-mail*</div><div class="priv_c"><input type="text" ftyp="email" name="acct_email" id="acct_email" data-theme="a"/></div>
+                        <div class="form_card1_lbl">Phone*</div><div><input type="text" ftyp="phone" name="acct_phone" id="acct_phone" data-theme="a"/></div>
+                        <div class="form_card1_lbl priv_c">Mobile</div><div class="priv_c"><input type="text" ftyp="phone" name="acct_mobile" id="acct_mobile" data-theme="a"/></div>
+                    </div>
+                    <div class="ctrls_row_r"><a class="save_ordr_btn" href="#" data-icon="plus" data-role="button" data-inline="true" data-theme="a">Save</a><p>* Denotes compulsory field.</p></div>
+                </div>
+            </div>
+        </div>
+        
+        <div data-role="header" style="overflow:hidden;" data-position="fixed">
+            <div data-role="navbar" data-iconpos="left">
+                <ul>
+                    <li><a href="#lkup_acct" target="_blank" data-icon="plus">New Sale</a></li>
+                    <li><a href="/" target="_blank" rel="external" data-icon="delete">CRM</a></li>
+                    <li><a href="/secur/logout.jsp" rel="external" data-icon="delete">Logout</a></li>
+                </ul>
+            </div><!-- /navbar -->
+        </div><!-- /header -->
+        <div data-role="content" data-theme="a"><div class="page_wrap">
+            <div id="cust_srch" class="pg_maincol">
+                <img class="h_logo" src="{!URLFOR($Resource.Hastens_POS_styles, 'hastens_pos_styles/images/hlogo_white3.svg')}"/>
+                <div class="cust_addr_sec">
+                    <h3 class="sctn_hdr">Existing Customer</h3>
+                    <div class="ctrls_col1_inl"><div data-role="controlgroup">
+                        <a class="nw_ordr_btn" href="#" data-icon="plus" data-role="button" data-theme="a">Enter Order</a>
+                        <a id="view_quotes4c" href="#quotes4c_panel" data-icon="plus" data-role="button" data-theme="a">Quotes</a>
+                        <a id="view_ords4c" href="#ords4c_panel" data-icon="plus" data-role="button" data-theme="a">Orders</a>
+                        <a id="edit_acct" href="#" data-icon="plus" data-role="button" data-theme="a">Update Details</a>
+                    </div></div>
+                    <div class="cust_addr_ro"></div>
+                </div>
+
+                <div id="nw_acc_row" class="ctrls_row">
+                <div data-role="controlgroup">
+                    <a href="#" id="nw_acc_btn" data-icon="plus" data-role="button" data-theme="a">New Private Customer</a>
+                    <a href="#" id="nw_biz_acc_btn" data-icon="plus" data-role="button" data-theme="a">New Business Customer</a>
+                </div>
+                <h3 class="grand_lbl1"> or</h3></div>
+                <h3 class="grand_lbl1">Search for customer by name or zip/post code:</h3>
+                <div class="ctrls_row" id="srch_key_row"><input type="text" name="srch_key" id="srch_key" data-theme="a"/><div data-role="controlgroup" data-type="horizontal" data-inline="true"><a href="#" id="zip_srch_btn" data-icon="search" data-role="button">Zip</a><a href="#" id="name_srch_btn" data-icon="search" data-role="button">Name</a></div></div>
+                <div style="margin-top:50px;color:#555;font-size:0.7em;">Hästens Point of Sale app<br/>Release: 1.0.7</div>
+            </div>
+            <div class="pg_halfcol fillout_img1_col">
+                <img src="{!URLFOR($Resource.Hastens_POS_styles, 'hastens_pos_styles/images/Luxuria_dark.jpg')}"/>
+            </div>
+        </div></div>
+    </div>
+    <div data-role="page" data-theme="a" id="sel_range">
+        <div data-role="header" style="overflow:hidden;" data-position="fixed">
+            <div data-role="navbar" data-iconpos="left">
+                <ul>
+                    <li><a href="#lkup_acct" target="_blank" data-icon="plus">New Sale</a></li>
+                    <li><a href="#basket" data-icon="grid">Quote Summary</a></li>
+                    <li><a href="/" target="_blank" rel="external" data-icon="delete">CRM</a></li>
+                    <li><a href="/secur/logout.jsp" rel="external" data-icon="delete">Logout</a></li>
+                </ul>
+            </div><!-- /navbar -->
+        </div><!-- /header -->
+        <div data-role="content" data-theme="a">
+            <div class="range_grid">
+            <div><img class="h_logo" src="{!URLFOR($Resource.Hastens_POS_styles, 'hastens_pos_styles/images/hlogo_white3.svg')}"/></div>
+            <div class="range_row">
+                <div p_range="bed-continental"><div class="range_cell_lbl">Continental Beds</div><img src="{!URLFOR($Resource.Hastens_POS_styles, 'hastens_pos_styles/images/continental.jpg')}"/></div>
+                <div p_range="bed-adjustable"><div class="range_cell_lbl">Adjustable Beds</div><img src="{!URLFOR($Resource.Hastens_POS_styles, 'hastens_pos_styles/images/adjustable.jpg')}"/></div>
+            </div>
+            <div class="range_row">
+                <div p_range="bed-frame"><div class="range_cell_lbl">Frame Beds</div><img src="{!URLFOR($Resource.Hastens_POS_styles, 'hastens_pos_styles/images/framebeds.jpg')}"/></div>
+                <div p_range="accessy"><div class="range_cell_lbl">Accessories &amp; Parts</div><img src="{!URLFOR($Resource.Hastens_POS_styles, 'hastens_pos_styles/images/accessories.jpg')}"/></div>
+            </div>
+            <h3 class="sctn_hdr">Select a range to begin.</h3>
+            </div>
+        </div>
+    </div>
+    <div data-role="page" data-theme="a" id="order_bed">
+        <div id="pick_range_panel" data-role="panel" data-position="right" data-display="overlay" data-dismissible="false">
+            <div id="pick_range_wrap">
+                <h3 class="sctn_hdr"><a class="cancel_panel1" href="#" data-icon="delete" data-rel="close" data-role="button" data-inline="true" data-iconpos="notext" data-theme="c"></a>Choose a Range</h3>
+                <div id="range_choices"></div>
+            </div>
+        </div>
+        <div id="pick_model_panel" data-role="panel" data-position="right" data-display="overlay" data-dismissible="false">
+            <div id="pick_model_wrap">
+                <h3 class="sctn_hdr"><a class="cancel_panel1" href="#" data-icon="delete" data-rel="close" data-role="button" data-inline="true" data-iconpos="notext" data-theme="c"></a>Choose a Model</h3>
+                <div id="model_choices"></div>
+            </div>
+        </div>
+        <div id="pick_size_panel" data-role="panel" data-position="right" data-display="overlay" data-dismissible="false">
+            <div id="pick_size_wrap">
+                <h3 class="sctn_hdr"><a class="cancel_panel1" href="#" data-icon="delete" data-rel="close" data-role="button" data-inline="true" data-iconpos="notext" data-theme="c"></a>Choose a Size</h3>
+                <div id="size_choices"></div>
+            </div>
+        </div>
+        <div id="custom_size_panel" data-role="panel" data-position="right" data-display="overlay" data-dismissible="false" data-swipe-close="false">
+            <div id="custom_size_wrap">
+                <h3 class="sctn_hdr"><a class="cancel_panel1" href="#" data-icon="delete" data-rel="close" data-role="button" data-inline="true" data-iconpos="notext" data-theme="c"></a>Custom Size</h3>
+                <div id="custom_size_form">
+                    <div id="custom_size_form_err" class="form_card1_err"></div>
+                    <div class="form_card1_lbl">Width</div>
+                    <div><input type="range" data-clear-btn="true" min="1" max="400" pattern="[0-9]*" name="cust_width" id="cust_width" data-theme="a" value=""/></div>
+                    <div class="form_card1_lbl">Length</div>
+                    <div><input type="range" data-clear-btn="true" min="1" max="400" pattern="[0-9]*" name="cust_length" id="cust_length" data-theme="a" value=""/></div>
+                    <div class="ctrls_row_r"><a id="custom_size_apply" href="#" data-icon="plus" data-role="button" data-inline="true" data-theme="a">Update</a></div>
+                </div>
+            </div>
+        </div>
+        <div id="pick_color_panel" data-role="panel" data-position="right" data-display="overlay" data-dismissible="false">
+            <div id="pick_color_wrap">
+                <h3 class="sctn_hdr"><a class="cancel_panel1" href="#" data-icon="delete" data-rel="close" data-role="button" data-inline="true" data-iconpos="notext" data-theme="c"></a>Choose a Fabric</h3>
+                <div id="color_choices"></div>
+            </div>
+        </div>
+        <div id="pick_firmness_panel" data-role="panel" data-position="right" data-display="overlay" data-dismissible="false">
+            <div id="pick_firmness_wrap">
+                <h3 class="sctn_hdr"><a class="cancel_panel1" href="#" data-icon="delete" data-rel="close" data-role="button" data-inline="true" data-iconpos="notext" data-theme="c"></a>Choose Tension</h3>
+                <div id="firmness_choices"></div>
+            </div>
+        </div>
+        <div id="pick_legs_panel" data-role="panel" data-position="right" data-display="overlay" data-dismissible="false">
+            <div id="pick_legs_wrap">
+                <h3 class="sctn_hdr"><a class="cancel_panel1" href="#" data-icon="delete" data-rel="close" data-role="button" data-inline="true" data-iconpos="notext" data-theme="c"></a>Choose Legs</h3>
+                <div id="legs_choices"></div>
+            </div>
+        </div>
+        <div id="pick_topper_panel" data-role="panel" data-position="right" data-display="overlay" data-dismissible="false">
+            <div id="pick_topper_wrap">
+                <h3 class="sctn_hdr"><a class="cancel_panel1" href="#" data-icon="delete" data-rel="close" data-role="button" data-inline="true" data-iconpos="notext" data-theme="c"></a>Choose a Mattress Topper</h3>
+                <div id="topper_choices"></div>
+            </div>
+        </div>
+        <div id="bed_base_split_panel" data-role="panel" data-position="right" data-display="overlay" data-dismissible="false">
+            <div id="bed_base_split_wrap">
+                <h3 class="sctn_hdr"><a class="cancel_panel1" href="#" data-icon="delete" data-rel="close" data-role="button" data-inline="true" data-iconpos="notext" data-theme="c"></a>Bed Base</h3>
+                <div id="bed_base_choices"></div>
+            </div>
+        </div>
+        <div id="mattress_split_panel" data-role="panel" data-position="right" data-display="overlay" data-dismissible="false">
+            <div id="mattress_split_wrap">
+                <h3 class="sctn_hdr"><a class="cancel_panel1" href="#" data-icon="delete" data-rel="close" data-role="button" data-inline="true" data-iconpos="notext" data-theme="c"></a>Mattress</h3>
+                <div id="mattress_choices"></div>
+            </div>
+        </div>
+
+        <div data-role="header" style="overflow:hidden;" data-position="fixed">
+            <div data-role="navbar" data-iconpos="left">
+                <ul>
+                    <li><a href="#lkup_acct" target="_blank" data-icon="plus">New Sale</a></li>
+                    <li><a href="#basket" data-icon="grid">Order Summary</a></li>
+                    <li><a href="/" target="_blank" rel="external" data-icon="delete">CRM</a></li>
+                    <li><a href="/secur/logout.jsp" rel="external" data-icon="delete">Logout</a></li>
+                </ul>
+            </div><!-- /navbar -->
+        </div><!-- /header -->
+        <div data-role="content" data-theme="a"><div class="page_wrap">
+            <div id="bed_picker" class="pg_maincol">
+                <img class="h_logo" src="{!URLFOR($Resource.Hastens_POS_styles, 'hastens_pos_styles/images/hlogo_white3.svg')}"/>
+                <div id="bed_summry_div">
+                    <h3 class="sctn_hdr">Choose from our beds</h3>
+                    <table class="form_card1">
+                        <tr id="bed_qty"><td class="form_card1_lbl"><div><div>Quantity:</div></div></td><td class="form_card1_edit"><a id="del_sol_btn" href="#" data-role="button" data-icon="delete" data-iconpos="left" data-inline="true">Delete</a></td><td class="form_card1_val"><input type="number" data-clear-btn="true" name="bed_qty_edit" pattern="[0-9]*" id="bed_qty_edit" min="1" value=""/></td></tr>
+                        <tr id="bed_range"><td class="form_card1_lbl"><div><div>Range:</div></div></td><td class="form_card1_edit"><a href="#pick_range_panel" data-role="button" data-icon="edit" data-iconpos="left" data-inline="true">Select</a></td><td class="form_card1_val"></td></tr>
+                        <tr id="bed_model"><td class="form_card1_lbl"><div><div>Model:</div></div></td><td class="form_card1_edit"><a href="#pick_model_panel" data-role="button" data-icon="edit" data-iconpos="left" data-inline="true">Select</a></td><td class="form_card1_val"></td></tr>
+                        <tr id="bed_firmness"><td class="form_card1_lbl"><div><div>Tension:</div></div></td><td class="form_card1_edit"><a href="#pick_firmness_panel" data-role="button" data-icon="edit" data-iconpos="left" data-inline="true">Select</a></td><td class="form_card1_val"></td></tr>
+                        <tr id="bed_firmness_cust"><td class="form_card1_lbl"><div><div>Custom Tension:</div></div></td><td class="form_card1_edit"></td><td class="form_card1_val"></td></tr>
+                        <tr id="bed_base_cust"><td class="form_card1_lbl"><div><div>Base:</div></div></td><td class="form_card1_edit"><a href="#bed_base_split_panel" data-role="button" data-icon="edit" data-iconpos="left" data-inline="true">Select</a></td><td class="form_card1_val"></td></tr>
+                        <tr id="bed_mattress_cust"><td class="form_card1_lbl"><div><div>Mattress:</div></div></td><td class="form_card1_edit"><a href="#mattress_split_panel" data-role="button" data-icon="edit" data-iconpos="left" data-inline="true">Select</a></td><td class="form_card1_val"></td></tr>
+                        <tr id="bed_size"><td class="form_card1_lbl"><div><div>Size:</div></div></td><td class="form_card1_edit"><a href="#pick_size_panel" data-role="button" data-icon="edit" data-iconpos="left" data-inline="true">Select</a></td><td class="form_card1_val"></td></tr>
+                        <tr id="bed_size_cust"><td class="form_card1_lbl"><div><div>Custom Size:</div></div></td><td class="form_card1_edit"><a href="#custom_size_panel" data-role="button" data-icon="edit" data-iconpos="left" data-inline="true">Select</a></td><td class="form_card1_val"></td></tr>
+                        <tr id="bed_color"><td class="form_card1_lbl"><div><div>Fabric:</div></div></td><td class="form_card1_edit"><a href="#pick_color_panel" data-role="button" data-icon="edit" data-iconpos="left" data-inline="true">Select</a></td><td class="form_card1_val"></td></tr>
+                        <tr id="bed_topm"><td class="form_card1_lbl"><div><div>Mattress Topper:</div></div></td><td class="form_card1_edit"><a href="#pick_topper_panel" data-role="button" data-icon="edit" data-iconpos="left" data-inline="true">Select</a></td><td class="form_card1_val"></td></tr>
+                        <tr id="bed_legs"><td class="form_card1_lbl"><div><div>Legs:</div></div></td><td class="form_card1_edit"><a href="#pick_legs_panel" data-role="button" data-icon="edit" data-iconpos="left" data-inline="true">Select</a></td><td class="form_card1_val"></td></tr>
+                        <tr id="bed_clips"><td class="form_card1_lbl"><div><div>VIP Clips:</div></div></td><td class="form_card1_edit"><label><input type="checkbox" name="edit_vip" id="edit_vip"/>Include</label></td><td class="form_card1_val"></td></tr>
+                        <tr id="bed_nameplates"><td class="form_card1_lbl"><div><div>Nameplates:</div></div></td><td class="form_card1_edit"><label><input type="checkbox" name="edit_nameplates" id="edit_nameplates"/>Include</label></td><td class="form_card1_val"></td></tr>
+                        <tr class="showme"><td class="form_card1_lbl"></td><td class="form_card1_edit"></td><td class="form_card1_val"><a class="add2_order" href="#" data-icon="plus" data-role="button" data-inline="true" data-theme="a">Add to Order</a></td></tr>
+                    </table>
+                    <div class="ctrls_row_c"></div>
+                </div>
+            </div>
+            <div class="pg_halfcol fillout_img1_col">
+                <img src="{!URLFOR($Resource.Hastens_POS_styles, 'hastens_pos_styles/images/Luxuria_dark.jpg')}"/>
+            </div>
+        </div></div>
+    </div>
+    <div data-role="page" data-theme="a" id="order_accs">
+        <div id="pick_accy_type_panel" data-role="panel" data-position="right" data-display="overlay" data-dismissible="false">
+            <div id="pick_accy_type_wrap">
+                <h3 class="sctn_hdr"><a class="cancel_panel1" href="#" data-icon="delete" data-rel="close" data-role="button" data-inline="true" data-iconpos="notext" data-theme="c"></a>Choose a Type</h3>
+                <div id="accy_type_choices"></div>
+            </div>
+        </div>
+        <div id="accy_keywords_panel" data-role="panel" data-position="right" data-display="overlay" data-dismissible="false">
+            <div id="pick_accy_keywords_wrap">
+                <h3 class="sctn_hdr"><a class="cancel_panel1" href="#" data-icon="delete" data-rel="close" data-role="button" data-inline="true" data-iconpos="notext" data-theme="c"></a>Choose Keywords</h3>
+                <p>Up to 3 keywords.<br/>Space separated.<br/>0-9 a-Z only.</p>
+                <form id="accy_keys_form">
+                <div id="accy_keys_form_err" class="form_card1_err"></div>
+                <div class="form_card1_lbl">Keywords</div>
+                <div><input type="text" name="accy_keys_editor" id="accy_keys_editor" data-theme="a"/></div>
+                <div class="ctrls_row_r"><a id="accy_keys_set" href="#" data-icon="plus" data-role="button" data-inline="true" data-theme="a">Update</a></div>
+                </form>
+            </div>
+        </div>
+        <div id="pick_accy_size_panel" data-role="panel" data-position="right" data-display="overlay" data-dismissible="false">
+            <div id="pick_accy_size_wrap">
+                <h3 class="sctn_hdr"><a class="cancel_panel1" href="#" data-icon="delete" data-rel="close" data-role="button" data-inline="true" data-iconpos="notext" data-theme="c"></a>Choose a Size</h3>
+                <div id="accy_size_choices"></div>
+            </div>
+        </div>
+        <div id="accy_shortlist_panel" data-role="panel" data-position="right" data-display="overlay" data-dismissible="false">
+            <div id="pick_accy_shortlist_wrap">
+                <h3 class="sctn_hdr"><a class="cancel_panel1" href="#" data-icon="delete" data-rel="close" data-role="button" data-inline="true" data-iconpos="notext" data-theme="c"></a>Shortlist</h3>
+                <div class="ctrls_row_fr"><a id="accy_prev_btn" href="#" data-icon="arrow-l" data-role="button" data-inline="true" data-theme="a">Prev</a><a id="accy_more_btn" href="#" data-icon="arrow-r" data-role="button" data-inline="true" data-theme="a">More</a></div>
+                <p>Tap to select.<br/>
+                Tap-hold to pop-up Item details.</p>
+                <div id="accy_shortlist_choices"></div>
+            </div>
+        </div>
+        <div id="accy_inum_panel" data-role="panel" data-position="right" data-display="overlay" data-dismissible="false">
+            <div id="pick_accy_inum_wrap">
+                <h3 class="sctn_hdr"><a class="cancel_panel1" href="#" data-icon="delete" data-rel="close" data-role="button" data-inline="true" data-iconpos="notext" data-theme="c"></a>Enter Item Number</h3>
+                <form id="inum_form">
+                <div id="inum_form_err" class="form_card1_err"></div>
+                <div class="form_card1_lbl"></div>
+                <div><input type="text" name="inum_editor" id="inum_editor" data-theme="a"/></div>
+                <div class="ctrls_row_r"><a id="inum_set" href="#" data-icon="plus" data-role="button" data-inline="true" data-theme="a">Update</a></div>
+                </form>
+            </div>
+        </div>
+        <div data-role="header" style="overflow:hidden;" data-position="fixed">
+            <div data-role="navbar" data-iconpos="left">
+                <ul>
+                    <li><a href="#lkup_acct" target="_blank" data-icon="plus">New Sale</a></li>
+                    <li><a href="#basket" data-icon="grid">Order Summary</a></li>
+                    <li><a href="/" target="_blank" rel="external" data-icon="delete">CRM</a></li>
+                    <li><a href="/secur/logout.jsp" rel="external" data-icon="delete">Logout</a></li>
+                </ul>
+            </div><!-- /navbar -->
+        </div><!-- /header -->
+        <div data-role="content" data-theme="a"><div class="page_wrap">
+            <div id="accy_picker" class="pg_maincol">
+                <img class="h_logo" src="{!URLFOR($Resource.Hastens_POS_styles, 'hastens_pos_styles/images/hlogo_white3.svg')}"/>
+                <div id="accy_summry_div">
+                    <h3 class="sctn_hdr">Choose from our accessories &amp; parts</h3>
+                    <table class="form_card1">
+                        <tr id="accy_qty"><td class="form_card1_lbl"><div><div>Quantity:</div></div></td><td class="form_card1_edit"><a id="del_accy_sol_btn" href="#" data-role="button" data-icon="delete" data-iconpos="left" data-inline="true">Delete</a></td><td class="form_card1_val"><input type="number" data-clear-btn="true" name="accy_qty_edit" pattern="[0-9]*" id="accy_qty_edit" min="1" value=""/></td></tr>
+                        <tr id="accy_type"><td class="form_card1_lbl">Type:</td><td class="form_card1_edit"><a href="#pick_accy_type_panel" data-role="button" data-icon="edit" data-iconpos="left" data-inline="true">Select</a></td><td class="form_card1_val"></td></tr>
+                        <tr id="accy_keywords"><td class="form_card1_lbl">Keywords:</td><td class="form_card1_edit"><a href="#accy_keywords_panel" data-role="button" data-icon="edit" data-iconpos="left" data-inline="true">Select</a></td><td class="form_card1_val"></td></tr>
+                        <tr id="accy_size"><td class="form_card1_lbl">Size:</td><td class="form_card1_edit"><a href="#pick_accy_size_panel" data-role="button" data-icon="edit" data-iconpos="left" data-inline="true">Select</a></td><td class="form_card1_val"></td></tr>
+                        <tr id="accy_shortlist"><td class="form_card1_lbl">Chosen Accessory:</td><td class="form_card1_edit"><a href="#accy_shortlist_panel" data-role="button" data-icon="edit" data-iconpos="left" data-inline="true">Select</a></td><td class="form_card1_val"></td></tr>
+                        <tr id="accy_itemnum"><td class="form_card1_lbl">Item no.:</td><td class="form_card1_edit"><a href="#accy_inum_panel" data-role="button" data-icon="edit" data-iconpos="left" data-inline="true">Select</a></td><td class="form_card1_val"></td></tr>
+                    </table>
+                    <div class="ctrls_row_c"><a class="accy_add2_order" href="#" data-icon="plus" data-role="button" data-inline="true" data-theme="a">Add to Order</a></div>
+                </div>
+            </div>
+            <div class="pg_halfcol fillout_img1_col">
+                <img src="{!URLFOR($Resource.Hastens_POS_styles, 'hastens_pos_styles/images/fabric_colors.jpg')}"/>
+            </div>
+        </div></div>
+    </div>
+    <div data-role="page" data-theme="a" id="basket">
+
+        <div id="quote_shipping_panel" data-role="panel" data-position="right" data-display="overlay" data-dismissible="false" data-swipe-close="false">
+            <div id="quote_shipping_wrap">
+                <h3 class="sctn_hdr"><a class="cancel_panel1" href="#" data-icon="delete" data-rel="close" data-role="button" data-inline="true" data-iconpos="notext" data-theme="c"></a>Shipping</h3>
+                <div id="quote_shipp_form">
+                    <div id="quote_shipp_form_err" class="form_card1_err"></div>
+                    <div class="form_card1_lbl">Cost</div>
+                    <div><input type="number" data-clear-btn="true" min="0" pattern="[0-9\.]*" name="quote_ship_amt" id="quote_ship_amt" data-theme="a" value=""/></div>
+                    <div class="ctrls_row_r"><a id="quote_shipping_apply" href="#" data-icon="plus" data-role="button" data-inline="true" data-theme="a">Update</a></div>
+                </div>
+            </div>
+        </div>
+
+        <div id="quote_discounts_panel" data-role="panel" data-position="right" data-display="overlay" data-dismissible="false" data-swipe-close="false">
+            <div id="quote_shipping_wrap">
+                <h3 class="sctn_hdr"><a class="cancel_panel1" href="#" data-icon="delete" data-rel="close" data-role="button" data-inline="true" data-iconpos="notext" data-theme="c"></a>Item Discounts</h3>
+                <div id="quote_disc_form">
+                    
+                    <div id="quote_disc_form_err" class="form_card1_err"></div>
+                    <div class="form_discount">
+                        <label for="disc_select" class="select">Select a discount:</label>
+						<select name="disc_select" id="disc_select" onchange="$$('#quote_disc_pct').val( $$(this).val() )">
+						   
+						</select>
+                    </div>
+                    <div class="form_card1_lbl">Discount %</div>
+                    <div><input type="number" data-clear-btn="true" min="0" max="100" pattern="[0-9\.]*" name="quote_disc_pct" id="quote_disc_pct" data-theme="a" value=""/></div>
+                    <div class="ctrls_row_r"><a id="quote_disc_pct_apply" href="#" data-icon="plus" data-role="button" data-inline="true" data-theme="a">Update</a></div>
+                    <div class="form_card1_lbl">Discount Amount</div>
+                    <div><input type="number" data-clear-btn="true" min="0" pattern="[0-9\.]*" name="quote_disc_amt" id="quote_disc_amt" data-theme="a" value=""/></div>
+                    <div class="ctrls_row_r"><a id="quote_disc_amt_apply" href="#" data-icon="plus" data-role="button" data-inline="true" data-theme="a">Update</a></div>
+                    <!-- 
+                    <div class="form_legs_disc">
+                        <div class="form_card1_lbl">Bed Legs Discount %</div>
+                        <div><input type="number" data-clear-btn="true" min="0" max="100" pattern="[0-9\.]*" name="quote_disc_legs_pct" id="quote_disc_legs_pct" data-theme="a" value=""/></div>
+                        <div class="ctrls_row_r">
+                            <a id="quote_disc_legs_full" href="#" data-icon="plus" data-role="button" data-inline="true" data-theme="a">100%</a>
+                            <a id="quote_disc_legs_apply" href="#" data-icon="plus" data-role="button" data-inline="true" data-theme="a">Update</a>
+                        </div>
+                    </div>
+                     -->
+                    <div class="form_apply_disc">
+                       <label><input type="checkbox" name="apply_disc" id="apply_disc"/>Apply to related items</label>
+                    </div>
+                    <div class="form_card1_lbl" style="margin-top:5px;">Reason</div>
+                    <div class="form_disc_reason">
+                       <textarea name="disc_reason" id="disc_reason"></textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div data-role="header" style="overflow:hidden;" data-position="fixed">
+            <div data-role="navbar" data-iconpos="left">
+                <ul>
+                    <li><a href="#lkup_acct" target="_blank" data-icon="plus">New Sale</a></li>
+                    <li><a href="/" target="_blank" rel="external" data-icon="delete">CRM</a></li>
+                    <li><a href="/secur/logout.jsp" rel="external" data-icon="delete">Logout</a></li>
+                </ul>
+            </div><!-- /navbar -->
+        </div><!-- /header -->
+        <div data-role="content" data-theme="a"><div class="page_wrap">
+            <div class="pg_maincol">
+                <div class="quote_top_row">
+                    <img class="h_logo" src="{!URLFOR($Resource.Hastens_POS_styles, 'hastens_pos_styles/images/hlogo_white3.svg')}"/>
+                    <div class="hastens_addr_ro"></div>
+                </div>
+                <div class="quote_body">
+                    <div data-role="navbar" class="quote_controls">
+                        <ul>
+                            <li><a class="btn_shop_beds" href="#sel_range">Add Bed<br/>to Order</a></li>
+                            <li><a class="btn_shop_accy" href="#order_accs">Add Parts &amp; <br/>Accessories</a></li>
+                            <li><a class="btn_cust_acc" href="#lkup_acct">Customer<br/>Account</a></li>
+                            <li><a class="btn_print_quote" href="#" target="_blank">Print<br/>Quote</a></li>
+                            <li><a id="btn_checkout" href="#">Go To<br/>Checkout</a></li>                    
+                        </ul>
+                    </div><!-- /navbar -->
+                    <div class="quote_content"></div>
+                </div>
+            </div>
+
+        </div></div>
+    </div>
+
+    <div data-role="page" data-theme="a" id="order">
+        <div id="order_pay_panel" data-role="panel" data-position="right" data-display="overlay" data-dismissible="true">
+            <div id="order_pay_wrap">
+                <h3 class="sctn_hdr"><a class="cancel_panel1" href="#" data-icon="delete" data-rel="close" data-role="button" data-inline="true" data-iconpos="notext" data-theme="c"></a>Make a Payment</h3>
+                <form id="pay_form">
+                    <div id="pay_form_err" class="form_card1_err"></div>
+                    <div class="form_card1_lbl">Amount</div>
+                    <div><input type="text" name="ord_pay_amt" id="ord_pay_amt" data-theme="a"/></div>
+                    <div class="ctrls_row_r"><a class="ord_pay_btn" href="#" target="_blank" data-icon="plus" data-role="button" data-inline="true" data-theme="a">Pay Now</a></div>
+                </form>
+            </div>
+        </div>
+        <div id="order_refr_panel" data-role="panel" data-position="right" data-display="overlay" data-dismissible="false">
+            <div id="order_refr_wrap">
+                <h3 class="sctn_hdr"><a class="cancel_panel1" href="#" data-icon="delete" data-rel="close" data-role="button" data-inline="true" data-iconpos="notext" data-theme="c"></a>Reload Order</h3>
+                <div class="form_card1_lbl">Click to reload the updated order after processing a payment</div>
+                <form id="pay_refr_form">
+                    <div class="ctrls_row_r"><a class="ord_refr_btn" href="#" data-icon="plus" data-role="button" data-inline="true" data-theme="a">Reload</a></div>
+                </form>
+            </div>
+        </div>
+        <div id="ord_shipping_panel" data-role="panel" data-position="right" data-display="overlay" data-dismissible="false" data-swipe-close="false">
+            <div id="ord_shipping_wrap">
+                <h3 class="sctn_hdr"><a class="cancel_panel1" href="#" data-icon="delete" data-rel="close" data-role="button" data-inline="true" data-iconpos="notext" data-theme="c"></a>Shipping</h3>
+                <div id="ord_shipp_form">
+                    <div id="ord_shipp_form_err" class="form_card1_err"></div>
+                    <div class="form_card1_lbl">Cost</div>
+                    <div><input type="number" data-clear-btn="true" min="0" pattern="[0-9\.]*" name="ord_ship_amt" id="ord_ship_amt" data-theme="a" value=""/></div>
+                    <div class="ctrls_row_r"><a id="ord_shipping_apply" href="#" data-icon="plus" data-role="button" data-inline="true" data-theme="a">Update</a></div>
+                </div>
+            </div>
+        </div>
+        <div data-role="header" style="overflow:hidden;" data-position="fixed">
+            <div data-role="navbar" data-iconpos="left">
+                <ul>
+                    <li><a href="#lkup_acct" target="_blank" data-icon="plus">New Sale</a></li>
+                    <li><a href="/" target="_blank" rel="external" data-icon="delete">CRM</a></li>
+                    <li><a href="/secur/logout.jsp" rel="external" data-icon="delete">Logout</a></li>
+                </ul>
+            </div><!-- /navbar -->
+        </div><!-- /header -->
+        <div data-role="content" data-theme="a"><div class="page_wrap">
+            <div class="pg_maincol">
+                <div class="order_top_row">
+                    <img class="h_logo" src="{!URLFOR($Resource.Hastens_POS_styles, 'hastens_pos_styles/images/hlogo_white3.svg')}"/>
+                    <div class="hastens_addr_ro"></div>
+                </div>
+                <div class="order_body">
+                    <div data-role="navbar" class="quote_controls">
+                        <ul>
+                            <li><a class="btn_cust_acc" href="#lkup_acct">Customer<br/>Account</a></li>
+                            <li><a class="btn_pay_ord" href="#order_pay_panel" target="_blank">Make<br/>Payment</a></li>
+                            <li><a class="btn_print_ord" href="#" target="_blank">Print<br/>Order</a></li>
+                        </ul>
+                    </div><!-- /navbar -->
+                    <div class="order_content"></div>
+                </div>
+            </div>
+
+        </div></div>
+    </div>
+
+</body>
+</apex:page>
